@@ -4,7 +4,7 @@ import SubHeader from './SubHeader'
 
 function Header() {
   return (
-    <Box height={'header'} >
+    <Box height={'header'}>
         <SubHeader/>
         <MainHeader/>
     </Box>
