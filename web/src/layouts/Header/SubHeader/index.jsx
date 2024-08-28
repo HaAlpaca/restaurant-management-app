@@ -5,7 +5,7 @@ function SubHeader() {
 
   return (
     <Box height={"subHeader"} sx={{ display: "flex", alignItems: "center" }} px={"50"}>
-      <ModeSelect />
+      <ModeSelect color={'red'}  />
     </Box>
   );
 }
