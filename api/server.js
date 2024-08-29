@@ -5,6 +5,7 @@ import connectDB from "./db/ConnectDb.js";
 
 //import routes
 import userRoutes from './routes/userRoutes.js'
+import reservationRoutes from './routes/reservationRoutes.js'
 
 dotenv.config();
 
@@ -23,4 +24,5 @@ app.get('/', (req, res) => {
     res.send('Welcome restaurant management system api')
   })
 app.use("/api/users",userRoutes);
+app.use("/api/reservation",reservationRoutes);
 app.listen(PORT,console.log(`Server start at http://localhost:${PORT}`))
