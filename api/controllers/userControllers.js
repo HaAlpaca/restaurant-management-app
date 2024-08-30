@@ -1,6 +1,5 @@
 import cloudinary from "../utils/cloudinary.js";
 
-
 const testUser = async (req, res) => {
   try {
     res.status(200).json({name: "alpaca", mail: "alpaca@gmail.com"})
