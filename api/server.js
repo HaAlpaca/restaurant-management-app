@@ -6,6 +6,7 @@ import connectDB from "./db/ConnectDb.js";
 //import routes
 import userRoutes from './routes/userRoutes.js'
 import reservationRoutes from './routes/reservationRoutes.js'
+import tableRoutes from './routes/tableRoutes.js'
 
 dotenv.config();
 
@@ -25,4 +26,5 @@ app.get('/', (req, res) => {
   })
 app.use("/api/users",userRoutes);
 app.use("/api/reservation",reservationRoutes);
+app.use("/api/table",tableRoutes);
 app.listen(PORT,console.log(`Server start at http://localhost:${PORT}`))
