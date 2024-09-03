@@ -1,17 +1,29 @@
 import mongoose from "mongoose";
 
-const tableSchema = mongoose.Schema({
-  _id: ObjectId,
-  tableName: String,
-  quantity: Number,
-  location: String,
-  status: Boolean,
-  reservations: [
-    {
-      reservationId: ObjectId,
+const tableSchema = mongoose.Schema(
+  {
+    tableName: {
+      type: String,
+      required: true,
     },
-  ],
-});
+    quantity: {
+      type: Number,
+    },
+    location: {
+      type: String,
+    },
+    status: {
+      type: String,
+    },
+    reservations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Reservation",
+      },
+    ],
+  },
+  { timestamps: true }
+)
 
 const Table = mongoose.model("Table", tableSchema);
 
