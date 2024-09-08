@@ -1,5 +1,5 @@
 import express from "express";
-import { testUser,testUpload, testPgsql } from '../controllers/userControllers.js'
+import { testUser,testUpload, testPgsql } from '../controllers/demoController.js'
 import upload from "../middlewares/upload.js";
 const router = express.Router();
 
