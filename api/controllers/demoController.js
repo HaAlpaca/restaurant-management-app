@@ -1,4 +1,4 @@
-import pool from "../db/ConnectDb.js";
+import {pool} from "../db/ConnectDb.js";
 import cloudinary from "../utils/cloudinary.js";
 
 const testUser = async (req, res) => {
@@ -13,7 +13,7 @@ const testUser = async (req, res) => {
 const testPgsql = async (req, res) => {
   try {
     const result = await pool.query(`select * from sample_table`);
-    console.log(result);
+    // console.log(result);
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
