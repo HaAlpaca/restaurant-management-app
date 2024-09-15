@@ -7,13 +7,14 @@ import {
   getItemById,
   updateItemById,
 } from "../controllers/itemController.js";
+import upload from "../middlewares/upload.js";
 
 const router = express.Router();
 
 router.get("/getall", getAllItem);
 router.get("/:id", getItemById);
-router.post("/create", createItem);
+router.post("/create", upload.single("image"), createItem);
 router.delete("/:id", deleteItemById);
-router.put("/:id", updateItemById);
+router.put("/:id", upload.single("image"), updateItemById);
 
 export default router;
