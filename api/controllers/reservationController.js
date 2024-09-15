@@ -1,11 +1,7 @@
 import baseController from "./baseController.js";
 
-const reservationFields = ["name", "quantity", "phone", "email", "time"];
-const reservationController = baseController(
-  "reservations",
-  "reservations_id",
-  reservationFields
-);
+const Fields = ["name", "quantity", "phone", "email", "time"];
+const Controller = baseController("reservations", "reservations_id", Fields);
 
 export const {
   create: createReservation,
@@ -13,4 +9,4 @@ export const {
   getAll: getAllReservation,
   updateById: updateReservationById,
   deleteById: deleteReservationById,
-} = reservationController;
+} = Controller;

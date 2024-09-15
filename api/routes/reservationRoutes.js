@@ -14,6 +14,5 @@ router.get("/:id", getReservationById);
 router.post("/create", createReservation);
 router.delete("/:id", deleteReservationById);
 router.put("/:id", updateReservationById);
-// router.get("/user/:username", getUserPosts);
 
 export default router;

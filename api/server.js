@@ -15,6 +15,8 @@ import tableRoutes from "./routes/tableRoutes.js";
 import itemRoutes from "./routes/itemRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import billRoutes from "./routes/billRoutes.js";
+import shiftRoutes from "./routes/shiftRoutes.js";
+import staffRoutes from "./routes/staffRoutes.js";
 // import demo table
 
 //dotenv
@@ -42,6 +44,8 @@ app.use("/api/order", orderRoutes);
 app.use("/api/table", tableRoutes);
 app.use("/api/reservation", reservationRoutes);
 app.use("/api/bill", billRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/shift", shiftRoutes);
 
 // join table
 

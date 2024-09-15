@@ -1,6 +1,6 @@
 import baseController from "./baseController.js";
 
-const productFields = [
+const Fields = [
   "name",
   "quantity",
   "category",
@@ -10,11 +10,7 @@ const productFields = [
   "customer_price",
   "description",
 ];
-const productController = baseController(
-  "products",
-  "products_id",
-  productFields
-);
+const Controller = baseController("products", "products_id", Fields);
 // product
 // Product
 export const {
@@ -23,4 +19,4 @@ export const {
   getAll: getAllProduct,
   updateById: updateProductById,
   deleteById: deleteProductById,
-} = productController;
+} = Controller;

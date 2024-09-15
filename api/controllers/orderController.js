@@ -1,7 +1,7 @@
 import baseController from "./baseController.js";
 
-const orderFields = ["status"];
-const orderController = baseController("orders", "orders_id", orderFields);
+const Fields = ["status"];
+const Controller = baseController("orders", "orders_id", Fields);
 // Order
 // order
 export const {
@@ -10,4 +10,4 @@ export const {
   getAll: getAllOrder,
   updateById: updateOrderById,
   deleteById: deleteOrderById,
-} = orderController;
+} = Controller;

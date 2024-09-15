@@ -1,11 +1,7 @@
 import baseController from "./baseController.js";
 
-const providerFields = ["name", "address", "phone", "email", "description"];
-const providerController = baseController(
-  "providers",
-  "providers_id",
-  providerFields
-);
+const Fields = ["name", "address", "phone", "email", "description"];
+const Controller = baseController("providers", "providers_id", Fields);
 
 export const {
   create: createProvider,
@@ -13,4 +9,4 @@ export const {
   getAll: getAllProvider,
   updateById: updateProviderById,
   deleteById: deleteProviderById,
-} = providerController;
+} = Controller;
