@@ -2,6 +2,7 @@ import baseController from "./baseController.js";
 
 const Fields = [
   "name",
+  "image_url",
   "quantity",
   "category",
   "weight",

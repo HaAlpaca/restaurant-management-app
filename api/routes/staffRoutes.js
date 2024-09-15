@@ -6,13 +6,14 @@ import {
   getStaffById,
   updateStaffById,
 } from "../controllers/staffController.js";
+import upload from "../middlewares/upload.js";
 
 const router = express.Router();
 
 router.get("/getall", getAllStaff);
 router.get("/:id", getStaffById);
-router.post("/create", createStaff);
+router.post("/create",upload.single("image"), createStaff);
 router.delete("/:id", deleteStaffById);
-router.put("/:id", updateStaffById);
+router.put("/:id",upload.single("image"), updateStaffById);
 
 export default router;

@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 
 //import routes
-import demoRoutes from "./routes/demoRoutes.js";
+import demoRoutes from "./routes/demoRoutes/demoRoutes.js";
 //import main table
 import providerRoutes from "./routes/providerRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
