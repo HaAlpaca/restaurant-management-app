@@ -1,7 +1,7 @@
 import { pool } from "../db/ConnectDb.js";
 import cloudinary from "../utils/cloudinary.js";
 
-const baseController = (tableName, idColumn, fields) => ({
+const baseController = (tableName, idColumn, fields, imageField = null) => ({
   // Kiểm tra sự tồn tại của ID trong bảng
   checkExistenceById: async (id) => {
     const query = {
@@ -14,19 +14,21 @@ const baseController = (tableName, idColumn, fields) => ({
 
   create: async (req, res) => {
     try {
-      const imagePath = req.file.path;
       let imageUrl = null;
 
-      if (imagePath) {
-        const uploadResponse = await cloudinary.uploader.upload(imagePath, {
-          folder: "RestaurantManagementSystemApp/images",
+      // Nếu có hình ảnh, tiến hành upload lên Cloudinary
+      if (imageField && req.file && req.file.path) {
+        const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
+          folder: `RestaurantManagementSystemApp/images/${tableName}`,
         });
-        // console.log(uploadResponse);
         imageUrl = uploadResponse.secure_url;
       }
 
+      // Tạo mảng giá trị từ req.body dựa trên các field
       const values = fields.map((field) => req.body[field]);
-      if (imageUrl) values[fields.indexOf("image_url")] = imageUrl;
+
+      // Nếu có trường hình ảnh, chèn imageUrl vào đúng vị trí
+      if (imageField && imageUrl) values[fields.indexOf(imageField)] = imageUrl;
 
       const query = {
         text: `INSERT INTO ${tableName}(${fields.join(", ")}) VALUES(${values
@@ -42,7 +44,14 @@ const baseController = (tableName, idColumn, fields) => ({
           .json({ message: `Error in creating ${tableName}` });
       }
 
-      res.status(200).json(ans.rows[0]);
+      const createdRow = ans.rows[0];
+
+      // Loại bỏ trường image_url nếu không có trường này hoặc không có giá trị
+      if (imageField && !imageUrl) {
+        delete createdRow[imageField];
+      }
+
+      res.status(200).json(createdRow);
     } catch (err) {
       res.status(500).json({ error: err.message });
       console.error(err);
@@ -68,7 +77,14 @@ const baseController = (tableName, idColumn, fields) => ({
         return res.status(404).json({ message: `${tableName} not found` });
       }
 
-      res.status(200).json(ans.rows[0]);
+      const resultRow = ans.rows[0];
+
+      // Loại bỏ trường image_url nếu không có giá trị
+      if (imageField && !resultRow[imageField]) {
+        delete resultRow[imageField];
+      }
+
+      res.status(200).json(resultRow);
     } catch (err) {
       res.status(500).json({ error: err.message });
       console.error(err);
@@ -84,7 +100,15 @@ const baseController = (tableName, idColumn, fields) => ({
         return res.status(404).json({ message: `${tableName} not found` });
       }
 
-      res.status(200).json(ans.rows);
+      const resultRows = ans.rows.map((row) => {
+        // Loại bỏ trường image_url nếu không có giá trị
+        if (imageField && !row[imageField]) {
+          delete row[imageField];
+        }
+        return row;
+      });
+
+      res.status(200).json(resultRows);
     } catch (err) {
       res.status(500).json({ error: err.message });
       console.error(err);
@@ -104,25 +128,28 @@ const baseController = (tableName, idColumn, fields) => ({
       const exists = await baseController(
         tableName,
         idColumn,
-        fields
+        fields,
+        imageField
       ).checkExistenceById(id);
       if (!exists) {
         return res.status(404).json({ message: `${tableName} not found` });
       }
 
-      const imagePath = req.file.path;
       let imageUrl = null;
 
-      if (imagePath) {
-        const uploadResponse = await cloudinary.uploader.upload(imagePath, {
-          folder: "RestaurantManagementSystemApp/images",
+      // Nếu có hình ảnh mới, upload lên Cloudinary
+      if (imageField && req.file && req.file.path) {
+        const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
+          folder: `RestaurantManagementSystemApp/images/${tableName}`,
         });
-        // console.log(uploadResponse);
         imageUrl = uploadResponse.secure_url;
       }
 
+      // Cập nhật các giá trị mới từ req.body
       const values = fields.map((field) => req.body[field]);
-      if (imageUrl) values[fields.indexOf("image_url")] = imageUrl;
+
+      // Nếu có trường hình ảnh và hình ảnh mới, cập nhật giá trị
+      if (imageField && imageUrl) values[fields.indexOf(imageField)] = imageUrl;
 
       const setClause = fields
         .map((field, i) => `${field} = $${i + 1}`)
@@ -143,7 +170,14 @@ const baseController = (tableName, idColumn, fields) => ({
           .json({ message: `Error in updating ${tableName}` });
       }
 
-      res.status(200).json(ans.rows[0]);
+      const updatedRow = ans.rows[0];
+
+      // Loại bỏ trường image_url nếu không có giá trị
+      if (imageField && !updatedRow[imageField]) {
+        delete updatedRow[imageField];
+      }
+
+      res.status(200).json(updatedRow);
     } catch (err) {
       res.status(500).json({ error: err.message });
       console.error(err);
@@ -163,7 +197,8 @@ const baseController = (tableName, idColumn, fields) => ({
       const exists = await baseController(
         tableName,
         idColumn,
-        fields
+        fields,
+        imageField
       ).checkExistenceById(id);
       if (!exists) {
         return res.status(404).json({ message: `${tableName} not found` });
