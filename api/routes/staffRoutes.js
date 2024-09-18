@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.get("/getall", getAllStaff);
 router.get("/:id", getStaffById);
-router.post("/create",upload.single("image"), createStaff);
+router.post("/create", upload.single("image"), createStaff);
 router.delete("/:id", deleteStaffById);
-router.put("/:id",upload.single("image"), updateStaffById);
+router.put("/:id", upload.single("image"), updateStaffById);
 
 export default router;
