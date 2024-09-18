@@ -10,7 +10,7 @@ const Fields = [
   "salary",
   "wage",
 ];
-const Controller = baseController("staff", "staff_id", Fields,'image_url');
+const Controller = baseController("staff", "staff_id", Fields, "image_url");
 
 export const {
   create: createStaff,

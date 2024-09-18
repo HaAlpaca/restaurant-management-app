@@ -17,7 +17,7 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
       let imageUrl = null;
 
       // Nếu có hình ảnh, tiến hành upload lên Cloudinary
-      if (imageField && req.file && req.file.path) {
+      if (imageField && req.file.path) {
         const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
           folder: `RestaurantManagementSystemApp/images/${tableName}`,
         });
@@ -28,7 +28,9 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
       const values = fields.map((field) => req.body[field]);
 
       // Nếu có trường hình ảnh, chèn imageUrl vào đúng vị trí
-      if (imageField && imageUrl) values[fields.indexOf(imageField)] = imageUrl;
+      if (imageField && imageUrl) {
+        values[fields.indexOf(imageField)] = imageUrl;
+      }
 
       const query = {
         text: `INSERT INTO ${tableName}(${fields.join(", ")}) VALUES(${values
@@ -46,7 +48,7 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
 
       const createdRow = ans.rows[0];
 
-      // Loại bỏ trường image_url nếu không có trường này hoặc không có giá trị
+      // Nếu không có trường hình ảnh hoặc không upload được ảnh, xóa trường imageField
       if (imageField && !imageUrl) {
         delete createdRow[imageField];
       }
@@ -79,7 +81,7 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
 
       const resultRow = ans.rows[0];
 
-      // Loại bỏ trường image_url nếu không có giá trị
+      // Nếu không có giá trị cho trường hình ảnh, loại bỏ trường image_url
       if (imageField && !resultRow[imageField]) {
         delete resultRow[imageField];
       }
@@ -138,7 +140,7 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
       let imageUrl = null;
 
       // Nếu có hình ảnh mới, upload lên Cloudinary
-      if (imageField && req.file && req.file.path) {
+      if (imageField && req.file.path) {
         const uploadResponse = await cloudinary.uploader.upload(req.file.path, {
           folder: `RestaurantManagementSystemApp/images/${tableName}`,
         });
@@ -149,7 +151,9 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
       const values = fields.map((field) => req.body[field]);
 
       // Nếu có trường hình ảnh và hình ảnh mới, cập nhật giá trị
-      if (imageField && imageUrl) values[fields.indexOf(imageField)] = imageUrl;
+      if (imageField && imageUrl) {
+        values[fields.indexOf(imageField)] = imageUrl;
+      }
 
       const setClause = fields
         .map((field, i) => `${field} = $${i + 1}`)
@@ -172,7 +176,7 @@ const baseController = (tableName, idColumn, fields, imageField = null) => ({
 
       const updatedRow = ans.rows[0];
 
-      // Loại bỏ trường image_url nếu không có giá trị
+      // Nếu không có giá trị cho imageField, loại bỏ trường image_url
       if (imageField && !updatedRow[imageField]) {
         delete updatedRow[imageField];
       }
