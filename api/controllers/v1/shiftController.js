@@ -1,4 +1,4 @@
-import baseController from "./baseController.js";
+import baseController from "./_baseController.js";
 
 const Fields = ["name", "start_time", "end_time"];
 const Controller = baseController("shift", "shift_id", Fields);

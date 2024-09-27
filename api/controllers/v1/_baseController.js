@@ -1,5 +1,5 @@
-import baseService from "../services/baseService.js";
-import ApiError from "../utils/apiError.js";
+import baseService from "../../services/baseService.js";
+import ApiError from "../../utils/apiError.js";
 import { StatusCodes } from "http-status-codes"; // Sử dụng mã trạng thái HTTP chuẩn
 
 const baseController = (tableName, idColumn, fields, imageField = null) => {

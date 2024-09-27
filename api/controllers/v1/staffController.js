@@ -1,4 +1,4 @@
-import baseController from "./baseController.js";
+import baseController from "./_baseController.js";
 
 const Fields = [
   "name",

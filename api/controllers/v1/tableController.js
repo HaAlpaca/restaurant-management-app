@@ -1,4 +1,4 @@
-import baseController from "./baseController.js";
+import baseController from "./_baseController.js";
 
 // Sử dụng base controller cho providers
 const Fields = ["name", "quantity", "location", "status"];

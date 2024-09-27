@@ -5,12 +5,13 @@ import {
   getAllBill,
   getBillById,
   updateBillById,
-} from "../../controllers/billController.js";
+} from "../../controllers/v1/billController.js";
+
 const Router = express.Router();
 Router.route("/").post(createBill);
 Router.route("/getall").get(getAllBill);
 Router.route("/:id")
   .get(getBillById)
-  .delete(deleteBillById)
-  .put(updateBillById);
+  .put(updateBillById)
+  .delete(deleteBillById);
 export const billRoute = Router;
