@@ -1,6 +1,5 @@
 import pg from "pg";
-import dotenv from "dotenv";
-dotenv.config();
+import { env } from "./environment.js";
 
 const client = new pg.Client({
   connectionString: process.env.PGSQL_CONNECTIONSTRING,
@@ -9,7 +8,7 @@ const client = new pg.Client({
   },
 });
 const pool = new pg.Pool({
-  connectionString: process.env.PGSQL_CONNECTIONSTRING,
+  connectionString: env.PGSQL_CONNECTIONSTRING,
   ssl: {
     rejectUnauthorized: false,
   },
