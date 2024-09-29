@@ -13,5 +13,5 @@ Router.route("/getall").get(getAllProvider);
 Router.route("/:id")
   .get(getProviderById)
   .delete(deleteProviderById)
-  .put(upload.single("image"), updateProviderById);
+  .patch(upload.single("image"), updateProviderById);
 export const providerRoute = Router;

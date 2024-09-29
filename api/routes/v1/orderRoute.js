@@ -13,5 +13,5 @@ Router.route("/getall").get(getAllOrder);
 Router.route("/:id")
   .get(getOrderById)
   .delete(deleteOrderById)
-  .put(updateOrderById);
+  .patch(updateOrderById);
 export const orderRoute = Router;

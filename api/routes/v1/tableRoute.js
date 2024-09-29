@@ -12,6 +12,6 @@ Router.route("/").post(createTable);
 Router.route("/getall").get(getAllTable);
 Router.route("/:id")
   .get(getTableById)
-  .put(updateTableById)
+  .patch(updateTableById)
   .delete(deleteTableById);
 export const tableRoute = Router;

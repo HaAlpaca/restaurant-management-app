@@ -13,5 +13,5 @@ Router.route("/getall").get(getAllStaff);
 Router.route("/:id")
   .get(getStaffById)
   .delete(deleteStaffById)
-  .put(upload.single("image"), updateStaffById);
+  .patch(upload.single("image"), updateStaffById);
 export const staffRoute = Router;

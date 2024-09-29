@@ -14,7 +14,7 @@ Router.route("/getall").get(getAllItem);
 Router.route("/:id")
   .get(getItemById)
   .delete(deleteItemById)
-  .put(upload.single("image"), updateItemById);
+  .patch(upload.single("image"), updateItemById);
 export const itemRoute = Router;
 
 // upload image

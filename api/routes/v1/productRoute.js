@@ -14,5 +14,5 @@ Router.route("/getall").get(getAllProduct);
 Router.route("/:id")
   .get(getProductById)
   .delete(deleteProductById)
-  .put(upload.single("image"), updateProductById);
+  .patch(upload.single("image"), updateProductById);
 export const productRoute = Router;

@@ -58,6 +58,8 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
 
   updateById: async (id, data, imagePath = null) => {
     let imageUrl = null;
+    const updatedValues = [];
+    const setClause = [];
 
     // Nếu có hình ảnh mới, upload lên Cloudinary
     if (imageField && imagePath) {
@@ -67,23 +69,35 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
       imageUrl = uploadResponse.secure_url;
     }
 
-    // Cập nhật các giá trị mới từ dữ liệu
-    const values = fields.map((field) => data[field]);
-
-    // Nếu có trường hình ảnh và hình ảnh mới, cập nhật giá trị
-    if (imageField && imageUrl) {
-      values[fields.indexOf(imageField)] = imageUrl;
+    // Lấy các giá trị từ data để tạo câu truy vấn động
+    let index = 1;
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) {
+        setClause.push(`${key} = $${index}`);
+        updatedValues.push(value);
+        index++;
+      }
     }
 
-    const setClause = fields
-      .map((field, i) => `${field} = $${i + 1}`)
-      .join(", ");
+    // Nếu có imageUrl, thêm vào truy vấn
+    if (imageField && imageUrl) {
+      setClause.push(`${imageField} = $${index}`);
+      updatedValues.push(imageUrl);
+    }
+
+    // Nếu không có gì để cập nhật, báo lỗi
+    if (setClause.length === 0) {
+      throw new ApiError(400, "No valid fields to update.");
+    }
+
+    // Thêm id vào cuối updatedValues để sử dụng trong WHERE clause
+    updatedValues.push(id);
 
     const query = {
-      text: `UPDATE ${tableName} SET ${setClause} WHERE ${idColumn} = $${
-        fields.length + 1
-      } RETURNING *`,
-      values: [...values, id],
+      text: `UPDATE ${tableName} SET ${setClause.join(
+        ", "
+      )} WHERE ${idColumn} = $${updatedValues.length} RETURNING *`,
+      values: updatedValues,
     };
 
     const result = await pool.query(query);

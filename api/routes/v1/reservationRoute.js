@@ -9,16 +9,20 @@ import {
 } from "../../controllers/v1/reservationController.js";
 import {
   addTableToReservation,
+  deleteTableFromReservation,
   getTablefromReservation,
+  updateTableForReservation,
 } from "../../controllers/v1/joinTable/reservationTable.js";
 const Router = express.Router();
 Router.route("/").post(createReservation);
 Router.route("/getall").get(getAllReservation);
-Router.route("/addtable/:id")
+Router.route("/jointable/:id")
   .post(addTableToReservation)
-  .get(getTablefromReservation);
+  .get(getTablefromReservation)
+  .delete(deleteTableFromReservation)
+  .patch(updateTableForReservation);
 Router.route("/:id")
   .get(getReservationById)
   .delete(deleteReservationById)
-  .put(updateReservationById);
+  .patch(updateReservationById);
 export const reservationRoute = Router;

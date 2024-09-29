@@ -12,6 +12,6 @@ Router.route("/").post(createBill);
 Router.route("/getall").get(getAllBill);
 Router.route("/:id")
   .get(getBillById)
-  .put(updateBillById)
+  .patch(updateBillById)
   .delete(deleteBillById);
 export const billRoute = Router;

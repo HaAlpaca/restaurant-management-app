@@ -13,5 +13,5 @@ Router.route("/getall").get(getAllShift);
 Router.route("/:id")
   .get(getShiftById)
   .delete(deleteShiftById)
-  .put(updateShiftById);
+  .patch(updateShiftById);
 export const shiftRoute = Router;
