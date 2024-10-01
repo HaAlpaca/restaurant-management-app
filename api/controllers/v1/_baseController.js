@@ -4,7 +4,6 @@ import { StatusCodes } from "http-status-codes"; // Sử dụng mã trạng thá
 
 const baseController = (tableName, idColumn, fields, imageField = null) => {
   const service = baseService(tableName, idColumn, fields, imageField);
-
   return {
     create: async (req, res, next) => {
       try {

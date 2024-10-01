@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../../utils/apiError.js";
 
-const joinTableBaseController = (
-  joinTableService,
+const joinTableBase2Controller = (
+  joinTable2Service,
   firstTableName, // Tên bảng đầu tiên (ví dụ: reservations)
   secondTableName // Tên bảng thứ hai (ví dụ: tables)
   // firstColumn, // Cột khóa chính của bảng đầu tiên (ví dụ: reservations_id)
@@ -11,12 +11,9 @@ const joinTableBaseController = (
   addEntries: async (req, res, next) => {
     try {
       const firstId = req.params.id; // ID của bảng đầu tiên (ví dụ: reservationsId)
-      const secondIds = req.body[`${secondTableName}Ids`]; // Danh sách ID của bảng thứ hai (ví dụ: tablesIds)
+      const { data } = req.body; // Danh sách ID của bảng thứ hai (ví dụ: tablesIds)
 
-      const addedEntries = await joinTableService.addEntries(
-        firstId,
-        secondIds
-      );
+      const addedEntries = await joinTable2Service.addEntries(firstId, data);
 
       if (!addedEntries) {
         throw new ApiError(
@@ -35,7 +32,7 @@ const joinTableBaseController = (
     try {
       const firstId = req.params.id;
 
-      const entries = await joinTableService.getEntries(firstId);
+      const entries = await joinTable2Service.getEntries(firstId);
 
       if (!entries || entries.length === 0) {
         throw new ApiError(
@@ -53,11 +50,11 @@ const joinTableBaseController = (
   updateEntries: async (req, res, next) => {
     try {
       const firstId = req.params.id;
-      const secondIds = req.body[`${secondTableName}Ids`];
+      const { data } = req.body; // Danh sách ID của bảng thứ hai (ví dụ: tablesIds)
 
-      const updatedEntries = await joinTableService.updateEntries(
+      const updatedEntries = await joinTable2Service.updateEntries(
         firstId,
-        secondIds
+        data
       );
 
       if (!updatedEntries) {
@@ -80,10 +77,10 @@ const joinTableBaseController = (
       let deletedEntries;
       if (!secondIds) {
         // Xóa tất cả liên kết
-        deletedEntries = await joinTableService.deleteEntries(firstId);
+        deletedEntries = await joinTable2Service.deleteEntries(firstId);
       } else {
         // Xóa liên kết cụ thể
-        deletedEntries = await joinTableService.deleteEntries(
+        deletedEntries = await joinTable2Service.deleteEntries(
           firstId,
           secondIds
         );
@@ -103,4 +100,4 @@ const joinTableBaseController = (
   },
 });
 
-export default joinTableBaseController;
+export default joinTableBase2Controller;

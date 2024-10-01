@@ -62,7 +62,7 @@ const START_SERVER = () => {
 // Hàm khởi động server và kết nối với cơ sở dữ liệu
 const startApp = async () => {
   try {
-    await pool.connect();
+    // await pool.connect();
     console.log("Connect to Database!");
     console.log("Environement build mode:", env.BUILD_MODE);
 

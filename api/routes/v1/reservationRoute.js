@@ -20,7 +20,7 @@ Router.route("/jointable/:id")
   .post(addTableToReservation)
   .get(getTablefromReservation)
   .delete(deleteTableFromReservation)
-  .patch(updateTableForReservation);
+  .put(updateTableForReservation);
 Router.route("/:id")
   .get(getReservationById)
   .delete(deleteReservationById)

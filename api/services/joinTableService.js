@@ -1,5 +1,6 @@
 import { pool } from "../config/db.js";
 import ApiError from "../utils/apiError.js";
+import { StatusCodes } from "http-status-codes"; // Import HTTP status codes
 
 const joinTableService = (
   joinTableName,
@@ -23,7 +24,7 @@ const joinTableService = (
       const result = await pool.query(query, params);
       return result.rows;
     } catch (error) {
-      throw new ApiError(500, `Error adding entries: ${error.message}`);
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, `Error adding entries: ${error.message}`);
     }
   },
 
@@ -39,13 +40,13 @@ const joinTableService = (
       const result = await pool.query(query, [firstTableId]);
 
       if (result.rowCount === 0) {
-        throw new ApiError(404, `No tables found for ${firstTableId} ID`);
+        throw new ApiError(StatusCodes.NOT_FOUND, `No tables found for ${firstTableId} ID`);
       }
 
       return result.rows;
     } catch (error) {
       throw new ApiError(
-        500,
+        StatusCodes.INTERNAL_SERVER_ERROR,
         `Error fetching tables by reservation ID: ${error.message}`
       );
     }
@@ -72,17 +73,15 @@ const joinTableService = (
 
       return result.rows;
     } catch (error) {
-      throw new ApiError(500, `Error updating entries: ${error.message}`);
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, `Error updating entries: ${error.message}`);
     }
   },
 
-  // Phương thức xóa các bản ghi trong bảng trung gian
   deleteEntries: async (firstId, secondIds = null) => {
     try {
       let query;
       const params = [firstId];
 
-      // Xoá nhiều hàng dựa trên danh sách secondIds nếu có
       if (secondIds && secondIds.length > 0) {
         const placeholders = secondIds
           .map((_, index) => `$${index + 2}`)
@@ -94,7 +93,6 @@ const joinTableService = (
         `;
         params.push(...secondIds);
       } else {
-        // Xoá tất cả bản ghi dựa trên firstId nếu không truyền secondIds
         query = `
           DELETE FROM ${joinTableName} 
           WHERE ${firstColumn} = $1
@@ -105,10 +103,9 @@ const joinTableService = (
       const result = await pool.query(query, params);
 
       if (result.rowCount === 0) {
-        throw new ApiError(404, `No entries found to delete for ${firstId}`);
+        throw new ApiError(StatusCodes.NOT_FOUND, `No entries found to delete for ${firstId}`);
       }
 
-      // Trả về thông báo thành công
       return {
         message: `Successfully deleted ${
           result.rowCount
@@ -117,7 +114,7 @@ const joinTableService = (
         }.`,
       };
     } catch (error) {
-      throw new ApiError(500, `Error deleting entries: ${error.message}`);
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, `Error deleting entries: ${error.message}`);
     }
   },
 });

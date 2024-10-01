@@ -12,7 +12,18 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
     return result.rowCount > 0;
   },
 
-  create: async (data, imagePath = null) => {
+  create: async (data = {}, imagePath = null) => {
+    
+    if (Object.keys(data).length === 0) {
+      // Nếu data không có gì, chèn một bản ghi mới với DEFAULT VALUES
+      const query = {
+        text: `INSERT INTO ${tableName} DEFAULT VALUES RETURNING *`,
+      };
+      console.log(query);
+      const result = await pool.query(query);
+      return result.rows[0];
+    }
+
     let imageUrl = null;
 
     // Nếu có hình ảnh, tiến hành upload lên Cloudinary
@@ -37,6 +48,7 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
         .join(", ")}) RETURNING *`,
       values,
     };
+
     const result = await pool.query(query);
     return result.rows[0];
   },
