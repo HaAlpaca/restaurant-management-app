@@ -24,7 +24,10 @@ const joinTableService = (
       const result = await pool.query(query, params);
       return result.rows;
     } catch (error) {
-      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, `Error adding entries: ${error.message}`);
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        `Error adding entries: ${error.message}`
+      );
     }
   },
 
@@ -40,7 +43,10 @@ const joinTableService = (
       const result = await pool.query(query, [firstTableId]);
 
       if (result.rowCount === 0) {
-        throw new ApiError(StatusCodes.NOT_FOUND, `No tables found for ${firstTableId} ID`);
+        throw new ApiError(
+          StatusCodes.NOT_FOUND,
+          `No tables found for ${firstTableId} ID`
+        );
       }
 
       return result.rows;
@@ -73,7 +79,10 @@ const joinTableService = (
 
       return result.rows;
     } catch (error) {
-      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, `Error updating entries: ${error.message}`);
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        `Error updating entries: ${error.message}`
+      );
     }
   },
 
@@ -103,7 +112,10 @@ const joinTableService = (
       const result = await pool.query(query, params);
 
       if (result.rowCount === 0) {
-        throw new ApiError(StatusCodes.NOT_FOUND, `No entries found to delete for ${firstId}`);
+        throw new ApiError(
+          StatusCodes.NOT_FOUND,
+          `No entries found to delete for ${firstId}`
+        );
       }
 
       return {
@@ -114,7 +126,10 @@ const joinTableService = (
         }.`,
       };
     } catch (error) {
-      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, `Error deleting entries: ${error.message}`);
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        `Error deleting entries: ${error.message}`
+      );
     }
   },
 });
