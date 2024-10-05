@@ -7,5 +7,6 @@ export const {
   create: createOrder,
   getById: getOrderById,
   getAll: getAllOrder,
+  updateById: updateOrderById,
   deleteById: deleteOrderById,
 } = Controller;
