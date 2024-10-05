@@ -13,7 +13,6 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
   },
 
   create: async (data = {}, imagePath = null) => {
-    
     if (Object.keys(data).length === 0) {
       // Nếu data không có gì, chèn một bản ghi mới với DEFAULT VALUES
       const query = {

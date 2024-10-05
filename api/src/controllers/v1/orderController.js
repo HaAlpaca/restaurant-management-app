@@ -1,6 +1,6 @@
 import baseController from "./_baseController.js";
 
-const Fields = [];
+const Fields = ["status"];
 const Controller = baseController("orders", "orders_id", Fields);
 
 export const {

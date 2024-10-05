@@ -6,4 +6,8 @@ export const env = {
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   PGSQL_CONNECTIONSTRING: process.env.PGSQL_CONNECTIONSTRING,
   BUILD_MODE: process.env.BUILD_MODE,
+  DB_USER: process.env.DB_USER,
+  DB_PASSWORD: process.env.DB_PASSWORD,
+  DB_NAME: process.env.DB_NAME,
+  DB_HOST: process.env.DB_HOST,
 };

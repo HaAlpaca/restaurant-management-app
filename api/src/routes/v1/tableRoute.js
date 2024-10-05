@@ -12,6 +12,7 @@ import {
   getOrderfromTable,
   updateOrderForTable,
 } from "../../controllers/v1/joinTable/tableOrder.js";
+import { Validation } from "../../validations/Validation.js";
 
 const Router = express.Router();
 Router.route("/").post(createTable);
@@ -22,7 +23,7 @@ Router.route("/joinorder/:id")
   .delete(deleteOrderFromTable)
   .put(updateOrderForTable);
 Router.route("/:id")
-  .get(getTableById)
-  .patch(updateTableById)
-  .delete(deleteTableById);
+  .get(Validation.checkID, getTableById)
+  .patch(Validation.checkID, updateTableById)
+  .delete(Validation.checkID, deleteTableById);
 export const tableRoute = Router;

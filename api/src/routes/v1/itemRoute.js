@@ -13,6 +13,7 @@ import {
   getProductfromItem,
   updateProductForItem,
 } from "../../controllers/v1/joinTable/itemProduct.js";
+import { Validation } from "../../validations/Validation.js";
 
 const Router = express.Router();
 Router.route("/").post(upload.single("image"), createItem);
@@ -23,9 +24,9 @@ Router.route("/joinproduct/:id")
   .delete(deleteProductFromItem)
   .put(updateProductForItem);
 Router.route("/:id")
-  .get(getItemById)
-  .delete(deleteItemById)
-  .patch(upload.single("image"), updateItemById);
+  .get(Validation.checkID, getItemById)
+  .delete(Validation.checkID, deleteItemById)
+  .patch(Validation.checkID, upload.single("image"), updateItemById);
 export const itemRoute = Router;
 
 // upload image

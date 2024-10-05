@@ -1,5 +1,5 @@
-import { pool } from "../../config/db.js";
-import cloudinary from "../../config/cloudinary.js";
+import { pool } from "../../config/db.js"; 
+import cloudinary from "../../config/cloudinary.js"; 
 
 const testUser = async (req, res) => {
   try {
