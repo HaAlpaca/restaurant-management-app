@@ -5,6 +5,7 @@ import {
   deleteOrderById,
   getAllOrder,
   getOrderById,
+  updateOrderById,
 } from "../../controllers/v1/orderController.js";
 import {
   addItemToOrder,
@@ -23,5 +24,6 @@ Router.route("/joinitem/:id")
   .put(updateItemForOrder);
 Router.route("/:id")
   .get(Validation.checkID, getOrderById)
+  .patch(Validation.checkID, updateOrderById)
   .delete(Validation.checkID, deleteOrderById);
 export const orderRoute = Router;
