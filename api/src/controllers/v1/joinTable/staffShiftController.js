@@ -2,7 +2,7 @@ import { pool } from "../../../config/db.js";
 import { filterShiftsByStaff } from "../../../services/staffShiftService.js";
 import { filterStaffByShift } from "../../../services/staffShiftService.js";
 
-const assignShiftToStaff = async (req, res) => {
+const assign = async (req, res) => {
   const { staff_id, shift_id, date } = req.body;
 
   try {
@@ -105,7 +105,7 @@ const getStaffByShift = async (req, res) => {
 };
 
 // Xóa một shift khỏi staff
-const removeShiftFromStaff = async (req, res) => {
+const remove = async (req, res) => {
   const { staff_id, shift_id } = req.body;
 
   try {
@@ -118,9 +118,4 @@ const removeShiftFromStaff = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-export {
-  assignShiftToStaff,
-  getShiftsByStaff,
-  getStaffByShift,
-  removeShiftFromStaff,
-};
+export { assign, getShiftsByStaff, getStaffByShift, remove };
