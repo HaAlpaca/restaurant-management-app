@@ -3,6 +3,7 @@ import {
   filterReservationsByTable,
   filterTablesByReservation,
 } from "../../../services/reservationTableService.js";
+import { StatusCodes } from "http-status-codes";
 
 // Hàm xử lý lấy danh sách các bàn theo đặt bàn
 const getTablesByReservation = async (req, res) => {
@@ -21,7 +22,9 @@ const getTablesByReservation = async (req, res) => {
 
     // Kiểm tra nếu không tìm thấy đặt bàn
     if (reservationResult.rows.length === 0) {
-      return res.status(404).json({ message: "Reservation not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Reservation not found" });
     }
 
     // Gọi hàm filter từ service để lấy danh sách các bàn liên quan đến đặt bàn
@@ -33,13 +36,15 @@ const getTablesByReservation = async (req, res) => {
     );
 
     // Trả về dữ liệu bao gồm cả thông tin đặt bàn và danh sách các bàn
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       reservation_name: reservationResult.rows[0].reservation_name,
       reservation_date: reservationResult.rows[0].date,
       tables: tables, // Danh sách các bàn liên quan đến đặt bàn
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
@@ -60,7 +65,9 @@ const getReservationsByTable = async (req, res) => {
 
     // Kiểm tra nếu không tìm thấy bàn
     if (tableResult.rows.length === 0) {
-      return res.status(404).json({ message: "Table not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Table not found" });
     }
 
     // Gọi hàm filter từ service để lấy danh sách các đặt bàn liên quan đến bàn
@@ -72,17 +79,20 @@ const getReservationsByTable = async (req, res) => {
     );
 
     // Trả về dữ liệu bao gồm cả thông tin bàn và danh sách các đặt bàn
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       table_name: tableResult.rows[0].table_name,
       table_location: tableResult.rows[0].location,
       table_status: tableResult.rows[0].status,
       reservations: reservations, // Danh sách các đặt bàn liên quan đến bàn
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
+// Hàm thêm mối quan hệ giữa table và reservation
 const add = async (req, res) => {
   const { reservations_id, tables_id } = req.body;
 
@@ -90,7 +100,7 @@ const add = async (req, res) => {
     // Kiểm tra nếu không đủ thông tin
     if (!reservations_id || !tables_id) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Missing table or reservation ID" });
     }
 
@@ -112,17 +122,20 @@ const add = async (req, res) => {
       [tables_id]
     );
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       message: "Table added to reservation successfully",
       table: tableDetails.rows[0],
       reservation: reservationDetails.rows[0],
       relation: result.rows[0], // Quan hệ vừa được tạo
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
+// Hàm xóa mối quan hệ giữa table và reservation
 const remove = async (req, res) => {
   const { reservations_id, tables_id } = req.body;
 
@@ -130,7 +143,7 @@ const remove = async (req, res) => {
     // Kiểm tra nếu không đủ thông tin
     if (!reservations_id || !tables_id) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: "Missing table or reservation ID" });
     }
 
@@ -142,15 +155,17 @@ const remove = async (req, res) => {
 
     if (result.rowCount === 0) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ message: "Table or reservation not found" });
     }
 
     res
-      .status(200)
+      .status(StatusCodes.OK)
       .json({ message: "Table removed from reservation successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 

@@ -38,6 +38,6 @@ Router.use("/orderitem", orderitemRoute);
 Router.use("/reservationtable", reservationtableRoute);
 Router.use("/workingtime", staffshiftRoute);
 Router.use("/ordertable", ordertableRoute);
-// Router.use("/productitem", productitemRoute);
+Router.use("/productitem", productitemRoute);
 // report
 export const APIs_v1 = Router;

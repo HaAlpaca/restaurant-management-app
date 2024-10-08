@@ -16,6 +16,7 @@ import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware.j
 
 import { APIs_v1 } from "./routes/v1/_index.js";
 import { checkCloudinary } from "./config/cloudinary.js";
+import cors from "cors";
 
 //dotenv
 const START_SERVER = () => {
@@ -23,7 +24,11 @@ const START_SERVER = () => {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false })); // parse form data in the req.body
-
+  app.use(
+    cors({
+      origin: "*",
+    })
+  );
   const swaggerOptions = {
     swaggerDefinition: {
       info: {

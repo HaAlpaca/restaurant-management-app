@@ -1,5 +1,9 @@
 import { pool } from "../../../config/db.js";
-import { filterOrdersByTable, filterTablesByOrder } from "../../../services/ordertableService.js";
+import {
+  filterOrdersByTable,
+  filterTablesByOrder,
+} from "../../../services/ordertableService.js";
+import { StatusCodes } from "http-status-codes";
 
 // Hàm xử lý lấy danh sách các bàn theo đơn hàng
 const getTablesByOrder = async (req, res) => {
@@ -18,20 +22,24 @@ const getTablesByOrder = async (req, res) => {
 
     // Kiểm tra nếu không tìm thấy đơn hàng
     if (orderResult.rows.length === 0) {
-      return res.status(404).json({ message: "Order not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Order not found" });
     }
 
     // Gọi hàm filter từ service để lấy danh sách các bàn liên quan đến đơn hàng
     const tables = await filterTablesByOrder(pool, orderId, filter, sort);
 
     // Trả về dữ liệu bao gồm cả thông tin đơn hàng và danh sách các bàn
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       order_status: orderResult.rows[0].status,
       order_created_at: orderResult.rows[0].created_at,
       tables: tables, // Danh sách các bàn liên quan đến đơn hàng
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
@@ -52,21 +60,25 @@ const getOrdersByTable = async (req, res) => {
 
     // Kiểm tra nếu không tìm thấy bàn
     if (tableResult.rows.length === 0) {
-      return res.status(404).json({ message: "Table not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Table not found" });
     }
 
     // Gọi hàm filter từ service để lấy danh sách các đơn hàng liên quan đến bàn
     const orders = await filterOrdersByTable(pool, tableId, filter, sort);
 
     // Trả về dữ liệu bao gồm cả thông tin bàn và danh sách các đơn hàng
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       table_name: tableResult.rows[0].table_name,
       table_location: tableResult.rows[0].location,
       table_status: tableResult.rows[0].status,
       orders: orders, // Danh sách các đơn hàng liên quan đến bàn
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
@@ -77,7 +89,9 @@ const add = async (req, res) => {
   try {
     // Kiểm tra nếu không đủ thông tin
     if (!orders_id || !tables_id) {
-      return res.status(400).json({ message: "Missing order or table ID" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Missing order or table ID" });
     }
 
     // Thêm mối quan hệ giữa order và table
@@ -98,14 +112,16 @@ const add = async (req, res) => {
       [tables_id]
     );
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       message: "Table added to order successfully",
       table: tableDetails.rows[0],
       order: orderDetails.rows[0],
       relation: result.rows[0], // Quan hệ vừa được tạo
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 
@@ -116,7 +132,9 @@ const remove = async (req, res) => {
   try {
     // Kiểm tra nếu không đủ thông tin
     if (!orders_id || !tables_id) {
-      return res.status(400).json({ message: "Missing order or table ID" });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Missing order or table ID" });
     }
 
     // Xóa mối quan hệ giữa order và table
@@ -126,12 +144,18 @@ const remove = async (req, res) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Order or table not found" });
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Order or table not found" });
     }
 
-    res.status(200).json({ message: "Table removed from order successfully" });
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Table removed from order successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
   }
 };
 

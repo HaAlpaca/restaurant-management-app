@@ -11,7 +11,7 @@ const addOrdersItems = async (req, res) => {
   try {
     // Kiểm tra nếu không có dữ liệu
     if (!Array.isArray(data) || data.length === 0) {
-      return res.status(400).json({ message: "Missing items data" });
+      return res.status(400).json();
     }
 
     const addedItemsOrders = []; // Mảng lưu trữ các bản ghi vừa được thêm
@@ -20,9 +20,7 @@ const addOrdersItems = async (req, res) => {
     for (const { itemId, orderId, quantity, description } of data) {
       // Kiểm tra nếu không đủ thông tin
       if (!itemId || !orderId || !quantity) {
-        return res
-          .status(400)
-          .json({ message: "Missing itemId, orderId, or quantity" });
+        return res.status(400).json();
       }
 
       // Thêm quan hệ vào bảng orders_items
@@ -36,11 +34,10 @@ const addOrdersItems = async (req, res) => {
     }
 
     res.status(201).json({
-      message: "Items added to orders successfully",
       addedItemsOrders, // Trả về danh sách các bản ghi đã thêm
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json();
   }
 };
 
@@ -58,7 +55,7 @@ const getItemsByOrder = async (req, res) => {
       items: items, // Danh sách các mục liên quan đến đơn hàng
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json();
   }
 };
 
@@ -75,7 +72,7 @@ const getOrdersByItem = async (req, res) => {
       orders: orders,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json();
   }
 };
 
@@ -85,7 +82,7 @@ const deleteOrderFromItems = async (req, res) => {
   try {
     // Kiểm tra nếu không đủ thông tin
     if (!id) {
-      return res.status(400).json({ message: "Missing orderId" });
+      return res.status(400).json();
     }
 
     // Xóa từ bảng orders_items
@@ -96,18 +93,15 @@ const deleteOrderFromItems = async (req, res) => {
 
     // Kiểm tra xem bản ghi có tồn tại không
     if (result.rowCount === 0) {
-      return res
-        .status(404)
-        .json({ message: "No items found for the given orderId" });
+      return res.status(404).json();
     }
 
     // Nếu thành công
     res.status(200).json({
-      message: "Successfully removed order items",
       deletedRecords: result.rows, // Trả về các bản ghi đã xóa
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json();
   }
 };
 
