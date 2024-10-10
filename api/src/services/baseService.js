@@ -35,7 +35,6 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
 
     // Tạo mảng giá trị từ dữ liệu dựa trên các field
     const values = fields.map((field) => data[field]);
-
     // Nếu có trường hình ảnh, chèn imageUrl vào đúng vị trí
     if (imageField && imageUrl) {
       values[fields.indexOf(imageField)] = imageUrl;
@@ -61,8 +60,36 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
     return result.rows[0];
   },
 
-  getAll: async () => {
-    const query = { text: `SELECT * FROM ${tableName}` };
+  getAll: async (filters = {}, sort = null) => {
+    const filterConditions = [];
+    const values = [];
+    let index = 1;
+
+    // Xử lý filter: Tạo điều kiện WHERE từ filters
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== undefined) {
+        filterConditions.push(`${key} ILIKE '%' || $${index} || '%'`);
+        values.push(value);
+        index++;
+      }
+    }
+
+    // Xử lý sort: Tạo câu lệnh ORDER BY từ sort
+    let sortClause = "";
+    if (sort) {
+      sortClause = `ORDER BY ${sort}`;
+    }
+
+    // Kết hợp filterConditions và sortClause vào query
+    const query = {
+      text: `SELECT * FROM ${tableName} ${
+        filterConditions.length > 0
+          ? `WHERE ${filterConditions.join(" AND ")}`
+          : ""
+      } ${sortClause}`,
+      values,
+    };
+
     const result = await pool.query(query);
     return result.rows;
   },
