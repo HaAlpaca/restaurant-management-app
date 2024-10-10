@@ -37,13 +37,19 @@ const baseController = (tableName, idColumn, fields, imageField = null) => {
 
     getAll: async (req, res, next) => {
       try {
-        const resultRows = await service.getAll();
+        const filters = req.query; // Lấy các tham số query để filter
+        const sort = req.query.sort || null; // Lấy sort nếu có
+
+        // Gọi service với filters và sort
+        const resultRows = await service.getAll(filters, sort);
+
         if (resultRows.length === 0) {
           throw new ApiError(
             StatusCodes.NOT_FOUND, // 404 Not Found
             `${tableName} not found`
           );
         }
+
         res.status(StatusCodes.OK).json(resultRows); // 200 OK
       } catch (err) {
         next(err);
