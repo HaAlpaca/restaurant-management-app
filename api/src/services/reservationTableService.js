@@ -6,7 +6,7 @@ export const filterTablesByReservation = async (
   sort
 ) => {
   let query = `
-    SELECT t.name AS table_name, t.location, t.status
+    SELECT t.tables_id, t.name AS table_name, t.location, t.status
     FROM tables t
     JOIN tables_reservations tr ON t.tables_id = tr.tables_id
     WHERE tr.reservations_id = $1
@@ -33,7 +33,7 @@ export const filterReservationsByTable = async (
   sort
 ) => {
   let query = `
-    SELECT r.name AS reservation_name, r.phone, r.email, r.time
+    SELECT r.reservations_id, r.name AS reservation_name,r.quantity, r.phone, r.email, r.time
     FROM reservations r
     JOIN tables_reservations tr ON r.reservations_id = tr.reservations_id
     WHERE tr.tables_id = $1
