@@ -37,8 +37,19 @@ const baseController = (tableName, idColumn, fields, imageField = null) => {
 
     getAll: async (req, res, next) => {
       try {
-        const filters = req.query; // Lấy các tham số query để filter
-        const sort = req.query.sort || null; // Lấy sort nếu có
+        const filters = req.query; // Lấy các filter từ query
+        let sortField = null;
+        let sortOrder = "ASC"; // Mặc định là 'ASC' nếu không có
+
+        // Kiểm tra và xử lý query parameter 'sort'
+        if (req.query.sort) {
+          const sortParams = req.query.sort.split(" "); // Tách 'sort' thành field và order
+          sortField = sortParams[0]; // Ví dụ: 'price'
+          sortOrder = sortParams[1]?.toUpperCase() || "ASC"; // Ví dụ: 'DESC', mặc định 'ASC'
+        }
+
+        // Kết hợp sortField và sortOrder nếu có
+        const sort = sortField ? `${sortField} ${sortOrder}` : null;
 
         // Gọi service với filters và sort
         const resultRows = await service.getAll(filters, sort);

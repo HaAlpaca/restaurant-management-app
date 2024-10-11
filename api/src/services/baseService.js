@@ -67,7 +67,8 @@ const baseService = (tableName, idColumn, fields, imageField = null) => ({
 
     // Xử lý filter: Tạo điều kiện WHERE từ filters
     for (const [key, value] of Object.entries(filters)) {
-      if (value !== undefined) {
+      if (value !== undefined && key !== "sort") {
+        // Loại bỏ 'sort' khỏi filter
         filterConditions.push(`${key} ILIKE '%' || $${index} || '%'`);
         values.push(value);
         index++;
