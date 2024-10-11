@@ -4,7 +4,8 @@ import {
   getOrdersByTable,
   getTablesByOrder,
   remove,
-} from "../../../controllers/v1/joinTable/orderTableController.js";
+} from "../../../controllers/v1/joinTable/ordertableController.js";
+
 const Router = express.Router();
 
 Router.get("/order/:id", getTablesByOrder);

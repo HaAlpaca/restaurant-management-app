@@ -14,7 +14,7 @@ const getTablesByOrder = async (req, res) => {
   try {
     // Truy vấn để lấy thông tin về đơn hàng
     const orderResult = await pool.query(
-      `SELECT o.status, o.created_at
+      `SELECT orders_id, o.status, o.created_at
          FROM orders o 
          WHERE o.orders_id = $1`,
       [orderId]
@@ -32,6 +32,7 @@ const getTablesByOrder = async (req, res) => {
 
     // Trả về dữ liệu bao gồm cả thông tin đơn hàng và danh sách các bàn
     res.status(StatusCodes.OK).json({
+      order_id: orderResult.rows[0].orders_id,
       order_status: orderResult.rows[0].status,
       order_created_at: orderResult.rows[0].created_at,
       tables: tables, // Danh sách các bàn liên quan đến đơn hàng
@@ -52,7 +53,7 @@ const getOrdersByTable = async (req, res) => {
   try {
     // Truy vấn để lấy thông tin về bàn
     const tableResult = await pool.query(
-      `SELECT t.name AS table_name, t.location, t.status
+      `SELECT t.tables_id,t.name AS table_name, t.location, t.status
          FROM tables t 
          WHERE t.tables_id = $1`,
       [tableId]
@@ -70,6 +71,7 @@ const getOrdersByTable = async (req, res) => {
 
     // Trả về dữ liệu bao gồm cả thông tin bàn và danh sách các đơn hàng
     res.status(StatusCodes.OK).json({
+      table_id: tableResult.rows[0].tables_id,
       table_name: tableResult.rows[0].table_name,
       table_location: tableResult.rows[0].location,
       table_status: tableResult.rows[0].status,

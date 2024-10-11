@@ -15,6 +15,7 @@ import { ordertableRoute } from "./joinTable/ordertableRoute.js";
 import { reservationtableRoute } from "./joinTable/reservationtableRoute.js";
 import { orderitemRoute } from "./joinTable/orderitemRoute.js";
 import { staffshiftRoute } from "./joinTable/staffshiftRoute.js";
+import { reportRoute } from "./report/reportRoute.js";
 const Router = express.Router();
 // check api v1
 Router.get("/status", (req, res) => {
@@ -39,5 +40,6 @@ Router.use("/reservationtable", reservationtableRoute);
 Router.use("/workingtime", staffshiftRoute);
 Router.use("/ordertable", ordertableRoute);
 Router.use("/productitem", productitemRoute);
+Router.use("/report", reportRoute);
 // report
 export const APIs_v1 = Router;
