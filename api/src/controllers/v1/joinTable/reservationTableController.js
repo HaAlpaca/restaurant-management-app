@@ -1,5 +1,7 @@
 import { pool } from "../../../config/db.js";
 import {
+  filterAllReservationsByTable,
+  filterAllTablesByReservation,
   filterReservationsByTable,
   filterTablesByReservation,
 } from "../../../services/reservationTableService.js";
@@ -47,6 +49,24 @@ const getTablesByReservation = async (req, res) => {
       .json({ message: error.message });
   }
 };
+const getAllTablesByReservation = async (req, res) => {
+  const filter = req.query.filter || ""; // Lấy giá trị filter từ query params (mặc định là rỗng nếu không có)
+  const sort = req.query.sort || "asc"; // Lấy giá trị sort (mặc định là "asc" nếu không có)
+
+  try {
+    // Gọi hàm filter từ service để lấy danh sách các bàn liên quan đến đặt bàn
+    const tables = await filterAllTablesByReservation(pool, filter, sort);
+
+    // Trả về dữ liệu bao gồm cả thông tin đặt bàn và danh sách các bàn
+    res.status(StatusCodes.OK).json({
+      tables: tables, // Danh sách các bàn liên quan đến đặt bàn
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
 
 // Hàm xử lý lấy danh sách các đặt bàn theo bàn
 const getReservationsByTable = async (req, res) => {
@@ -83,6 +103,24 @@ const getReservationsByTable = async (req, res) => {
       table_name: tableResult.rows[0].table_name,
       table_location: tableResult.rows[0].location,
       table_status: tableResult.rows[0].status,
+      reservations: reservations, // Danh sách các đặt bàn liên quan đến bàn
+    });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+const getAllReservationsByTable = async (req, res) => {
+  const filter = req.query.filter || ""; // Lấy giá trị filter từ query params (mặc định là rỗng nếu không có)
+  const sort = req.query.sort || "asc"; // Lấy giá trị sort (mặc định là "asc" nếu không có)
+
+  try {
+    // Gọi hàm filter từ service để lấy danh sách các đặt bàn liên quan đến bàn
+    const reservations = await filterAllReservationsByTable(pool, filter, sort);
+
+    // Trả về dữ liệu bao gồm cả thông tin bàn và danh sách các đặt bàn
+    res.status(StatusCodes.OK).json({
       reservations: reservations, // Danh sách các đặt bàn liên quan đến bàn
     });
   } catch (error) {
@@ -169,4 +207,28 @@ const remove = async (req, res) => {
   }
 };
 
-export { getTablesByReservation, getReservationsByTable, remove, add };
+const getall = async (req, res) => {
+  try {
+    // Truy vấn để lấy thông tin về bàn
+    const result = await pool.query(
+      `SELECT *
+         FROM tables_reservations
+      `
+    );
+    res.status(StatusCodes.OK).json(result.rows);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+export {
+  getTablesByReservation,
+  getReservationsByTable,
+  getAllTablesByReservation,
+  getAllReservationsByTable,
+  remove,
+  add,
+  getall,
+};
