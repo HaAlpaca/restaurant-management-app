@@ -161,4 +161,20 @@ const remove = async (req, res) => {
   }
 };
 
-export { getTablesByOrder, getOrdersByTable, add, remove };
+const getall = async (req, res) => {
+  try {
+    // Truy vấn để lấy thông tin về bàn
+    const result = await pool.query(
+      `SELECT *
+         FROM orders_tables
+      `
+    );
+    res.status(StatusCodes.OK).json(result.rows);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
+export { getTablesByOrder, getOrdersByTable, add, remove, getall };

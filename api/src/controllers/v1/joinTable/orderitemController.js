@@ -3,7 +3,7 @@ import {
   filterAndSortItemsByOrder,
   filterAndSortOrdersByItem,
 } from "../../../services/orderitemService.js";
-
+import { StatusCodes } from "http-status-codes";
 // Hàm thêm nhiều quan hệ giữa items và orders
 const addOrdersItems = async (req, res) => {
   const { data } = req.body; // Lấy mảng data từ body
@@ -105,9 +105,25 @@ const deleteOrderFromItems = async (req, res) => {
   }
 };
 
+const getall = async (req, res) => {
+  try {
+    // Truy vấn để lấy thông tin về bàn
+    const result = await pool.query(
+      `SELECT * FROM orders_items
+      `
+    );
+    res.status(StatusCodes.OK).json(result.rows);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
+};
+
 export {
   addOrdersItems,
   getItemsByOrder,
   getOrdersByItem,
   deleteOrderFromItems,
+  getall
 };

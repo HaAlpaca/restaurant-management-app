@@ -3,8 +3,8 @@ import {
   assign,
   getShiftsByStaff,
   getStaffByShift,
+  remove,
 } from "../../../controllers/v1/joinTable/staffshiftController.js";
-import { remove } from "../../../controllers/v1/joinTable/reservationtableController.js";
 const Router = express.Router();
 
 Router.post("/assign", assign); // Gán shift cho staff
