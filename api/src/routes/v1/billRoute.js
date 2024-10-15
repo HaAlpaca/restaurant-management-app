@@ -4,7 +4,6 @@ import {
   deleteBillById,
   getAllBill,
   getBillById,
-  updateBillById,
 } from "../../controllers/v1/billController.js";
 import { Validation } from "../../validations/Validation.js";
 
@@ -13,6 +12,5 @@ Router.route("/").post(createBill);
 Router.route("/getall").get(getAllBill);
 Router.route("/:id")
   .get(Validation.checkID, getBillById)
-  .patch(Validation.checkID, updateBillById)
   .delete(Validation.checkID, deleteBillById);
 export const billRoute = Router;
