@@ -6,6 +6,7 @@ const Fields = [
   "image_url",
   "phone",
   "email",
+  "is_actived",
   "description",
 ];
 const Controller = baseController(

@@ -1,6 +1,6 @@
 import baseController from "./_baseController.js";
 
-const Fields = ["name", "quantity", "phone", "email", "time"];
+const Fields = ["name", "quantity", "phone", "email", "time", "status"];
 const Controller = baseController("reservations", "reservations_id", Fields);
 
 export const {

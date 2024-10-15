@@ -1,6 +1,6 @@
 import { pool } from "../../../config/db.js";
-import { filterShiftsByStaff } from "../../../services/staffShiftService.js";
-import { filterStaffByShift } from "../../../services/staffShiftService.js";
+import { filterShiftsByStaff } from "../../../services/v1/staffShiftService.js";
+import { filterStaffByShift } from "../../../services/v1/staffShiftService.js";
 import { StatusCodes } from "http-status-codes";
 
 // Hàm phân công ca làm việc cho nhân viên

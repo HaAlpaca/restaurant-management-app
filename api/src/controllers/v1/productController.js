@@ -4,6 +4,7 @@ const Fields = [
   "name",
   "image_url",
   "quantity",
+  "color",
   "category",
   "weight",
   "unit",
@@ -11,7 +12,12 @@ const Fields = [
   "customer_price",
   "description",
 ];
-const Controller = baseController("products", "products_id", Fields,'image_url');
+const Controller = baseController(
+  "products",
+  "products_id",
+  Fields,
+  "image_url"
+);
 // product
 // Product
 export const {

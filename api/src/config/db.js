@@ -13,5 +13,11 @@ const pool = new pg.Pool({
     rejectUnauthorized: false,
   },
 });
+const pool2 = new pg.Pool({
+  connectionString: env.PGSQL_CONNECTIONSTRING2,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
-export { pool, client };
+export { pool, client, pool2 };

@@ -1,11 +1,12 @@
 import { pool } from "../../../config/db.js";
+
+import { StatusCodes } from "http-status-codes";
 import {
   filterAllReservationsByTable,
   filterAllTablesByReservation,
   filterReservationsByTable,
   filterTablesByReservation,
-} from "../../../services/reservationTableService.js";
-import { StatusCodes } from "http-status-codes";
+} from "../../../services/v1/reservationTableService.js";
 
 // Hàm xử lý lấy danh sách các bàn theo đặt bàn
 const getTablesByReservation = async (req, res) => {
