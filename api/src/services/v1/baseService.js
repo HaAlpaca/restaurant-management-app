@@ -1,5 +1,5 @@
-import { pool } from "../config/db.js";
-import cloudinary from "../config/cloudinary.js";
+import { pool } from "../../config/db.js";
+import cloudinary from "../../config/cloudinary.js";
 
 const baseService = (tableName, idColumn, fields, imageField = null) => ({
   // Kiểm tra sự tồn tại của ID trong bảng

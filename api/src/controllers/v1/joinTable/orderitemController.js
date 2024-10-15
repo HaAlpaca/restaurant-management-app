@@ -2,7 +2,7 @@ import { pool } from "../../../config/db.js";
 import {
   filterAndSortItemsByOrder,
   filterAndSortOrdersByItem,
-} from "../../../services/orderitemService.js";
+} from "../../../services/v1/orderitemService.js";
 import { StatusCodes } from "http-status-codes";
 // Hàm thêm nhiều quan hệ giữa items và orders
 const addOrdersItems = async (req, res) => {

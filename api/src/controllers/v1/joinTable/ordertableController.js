@@ -1,9 +1,7 @@
 import { pool } from "../../../config/db.js";
-import {
-  filterOrdersByTable,
-  filterTablesByOrder,
-} from "../../../services/ordertableService.js";
+
 import { StatusCodes } from "http-status-codes";
+import { filterOrdersByTable, filterTablesByOrder } from "../../../services/v1/ordertableService.js";
 
 // Hàm xử lý lấy danh sách các bàn theo đơn hàng
 const getTablesByOrder = async (req, res) => {

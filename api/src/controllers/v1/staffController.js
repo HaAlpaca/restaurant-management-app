@@ -9,6 +9,9 @@ const Fields = [
   "role",
   "salary",
   "wage",
+  "username",
+  "password_hash",
+  "email",
 ];
 const Controller = baseController("staff", "staff_id", Fields, "image_url");
 

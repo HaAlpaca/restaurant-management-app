@@ -51,9 +51,7 @@ const START_SERVER = () => {
   // routes
   app.use("/api", APIs_v1);
 
-  app.use("/api/demo", demoRoutes);
-
-  // join table
+  // app.use("/api/demo", demoRoutes);
 
   // errror handling
   app.use(errorHandlingMiddleware);
