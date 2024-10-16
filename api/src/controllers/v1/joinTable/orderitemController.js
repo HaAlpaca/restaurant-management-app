@@ -6,38 +6,36 @@ import {
 import { StatusCodes } from "http-status-codes";
 // Hàm thêm nhiều quan hệ giữa items và orders
 const addOrdersItems = async (req, res) => {
-  const { data } = req.body; // Lấy mảng data từ body
+  const items = req.body; // Lấy mảng trực tiếp từ body
 
   try {
     // Kiểm tra nếu không có dữ liệu
-    if (!Array.isArray(data) || data.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json();
     }
 
     const addedItemsOrders = []; // Mảng lưu trữ các bản ghi vừa được thêm
 
-    // Duyệt qua từng đối tượng trong mảng data
-    for (const { itemId, orderId, quantity, description } of data) {
+    // Duyệt qua từng đối tượng trong mảng
+    for (const { items_id, orders_id, quantity } of items) {
       // Kiểm tra nếu không đủ thông tin
-      if (!itemId || !orderId || !quantity) {
+      if (!items_id || !orders_id || !quantity) {
         return res.status(400).json();
       }
 
       // Thêm quan hệ vào bảng orders_items
       const result = await pool.query(
-        `INSERT INTO orders_items (items_id, orders_id, quantity, description) 
-         VALUES ($1, $2, $3, $4) RETURNING *`,
-        [itemId, orderId, quantity, description || null]
+        `INSERT INTO orders_items (items_id, orders_id, quantity) 
+         VALUES ($1, $2, $3) RETURNING *`,
+        [items_id, orders_id, quantity]
       );
 
       addedItemsOrders.push(result.rows[0]); // Thêm bản ghi vừa thêm vào mảng
     }
 
-    res.status(201).json({
-      addedItemsOrders, // Trả về danh sách các bản ghi đã thêm
-    });
+    res.status(201).json(addedItemsOrders);
   } catch (error) {
-    res.status(500).json();
+    res.status(500).json(error);
   }
 };
 
@@ -48,14 +46,29 @@ const getItemsByOrder = async (req, res) => {
   const sort = req.query.sort || "asc"; // Lấy giá trị sort (mặc định là "asc")
 
   try {
+    // Truy vấn để lấy thông tin về bàn
+    const orderResult = await pool.query(
+      `SELECT o.*
+             FROM orders o 
+             WHERE o.orders_id = $1`,
+      [orderId]
+    );
+    console.log(orderResult);
+
+    // Kiểm tra nếu không tìm thấy bàn
+    if (orderResult.rows.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Order not found" });
+    }
     const items = await filterAndSortItemsByOrder(pool, orderId, filter, sort);
 
     res.status(200).json({
-      orderId: orderId,
+      ...orderResult.rows[0],
       items: items, // Danh sách các mục liên quan đến đơn hàng
     });
   } catch (error) {
-    res.status(500).json();
+    res.status(500).json(error);
   }
 };
 
@@ -66,39 +79,22 @@ const getOrdersByItem = async (req, res) => {
   const sort = req.query.sort || "asc"; // Lấy giá trị sort (mặc định là "asc")
 
   try {
-    const orders = await filterAndSortOrdersByItem(pool, itemId, filter, sort);
-    res.status(200).json({
-      itemId: itemId,
-      orders: orders,
-    });
-  } catch (error) {
-    res.status(500).json();
-  }
-};
-
-const deleteOrderFromItems = async (req, res) => {
-  const { id } = req.params; // Không cần `.id` vì `id` là một phần của params
-
-  try {
-    // Kiểm tra nếu không đủ thông tin
-    if (!id) {
-      return res.status(400).json();
-    }
-
-    // Xóa từ bảng orders_items
-    const result = await pool.query(
-      "DELETE FROM orders_items WHERE orders_id = $1 RETURNING *",
-      [id]
+    // Truy vấn để lấy thông tin về bàn
+    const itemResult = await pool.query(
+      `SELECT i.* FROM items i WHERE i.items_id = $1`,
+      [itemId]
     );
 
-    // Kiểm tra xem bản ghi có tồn tại không
-    if (result.rowCount === 0) {
-      return res.status(404).json();
+    // Kiểm tra nếu không tìm thấy bàn
+    if (itemResult.rows.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Order not found" });
     }
-
-    // Nếu thành công
+    const orders = await filterAndSortOrdersByItem(pool, itemId, filter, sort);
     res.status(200).json({
-      deletedRecords: result.rows, // Trả về các bản ghi đã xóa
+      ...itemResult.rows[0],
+      orders: orders,
     });
   } catch (error) {
     res.status(500).json();
@@ -120,10 +116,45 @@ const getall = async (req, res) => {
   }
 };
 
+const deleteOrdersItems = async (req, res) => {
+  const { items_id, orders_id } = req.query; // Lấy items_id và orders_id từ query string
+
+  try {
+    // Kiểm tra nếu không có đủ thông tin
+    if (!items_id || !orders_id) {
+      return res.status(400).json({ message: "Missing items_id or orders_id" });
+    }
+
+    // Kiểm tra xem bản ghi có tồn tại không
+    const checkExist = await pool.query(
+      `SELECT * FROM orders_items WHERE items_id = $1 AND orders_id = $2`,
+      [items_id, orders_id]
+    );
+
+    if (checkExist.rowCount === 0) {
+      return res.status(404).json({ message: "Order item not found" });
+    }
+
+    // Xóa bản ghi nếu tồn tại
+    const result = await pool.query(
+      `DELETE FROM orders_items 
+       WHERE items_id = $1 AND orders_id = $2 
+       RETURNING *`,
+      [items_id, orders_id]
+    );
+
+    res.status(200).json({
+      message: "Delete successfully",
+    });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export {
   addOrdersItems,
   getItemsByOrder,
   getOrdersByItem,
-  deleteOrderFromItems,
-  getall
+  deleteOrdersItems,
+  getall,
 };

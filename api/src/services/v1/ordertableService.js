@@ -1,7 +1,7 @@
 // Hàm filter và sort danh sách các bàn theo đơn hàng
 export const filterTablesByOrder = async (pool, orderId, filter, sort) => {
   let query = `
-    SELECT t.tables_id, t.name AS table_name, t.location, t.status
+    SELECT t.*
     FROM tables t
     JOIN orders_tables ot ON t.tables_id = ot.tables_id
     WHERE ot.orders_id = $1
@@ -24,7 +24,7 @@ export const filterTablesByOrder = async (pool, orderId, filter, sort) => {
 // Hàm filter và sort danh sách các đơn hàng theo bàn (chỉ pending và completed)
 export const filterOrdersByTable = async (pool, tableId, filter, sort) => {
   let query = `
-    SELECT o.orders_id,o.status, o.created_at, o.updated_at
+    SELECT o.*
     FROM orders o
     JOIN orders_tables ot ON o.orders_id = ot.orders_id
     WHERE ot.tables_id = $1

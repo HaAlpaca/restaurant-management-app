@@ -5,9 +5,9 @@ import {
   getAllProduct,
   getProductById,
   updateProductById,
-} from "../../controllers/v1/productController.js";
-import upload from "../../middlewares/upload.js";
-import { Validation } from "../../validations/Validation.js";
+} from "../../../controllers/v1/Table/productController.js";
+import upload from "../../../middlewares/upload.js";
+import { Validation } from "../../../validations/Validation.js";
 
 const Router = express.Router();
 Router.route("/").post(upload.single("image"), createProduct);

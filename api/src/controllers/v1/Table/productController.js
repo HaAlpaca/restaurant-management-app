@@ -6,7 +6,6 @@ const Fields = [
   "quantity",
   "color",
   "category",
-  "weight",
   "unit",
   "total_price",
   "customer_price",

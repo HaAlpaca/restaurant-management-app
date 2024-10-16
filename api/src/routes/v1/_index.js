@@ -1,20 +1,21 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
-import { billRoute } from "./billRoute.js";
-import { tableRoute } from "./tableRoute.js";
-import { itemRoute } from "./itemRoute.js";
-import { staffRoute } from "./staffRoute.js";
-import { productRoute } from "./productRoute.js";
-import { orderRoute } from "./orderRoute.js";
-import { reservationRoute } from "./reservationRoute.js";
-import { shiftRoute } from "./shiftRoute.js";
-import { providerRoute } from "./providerRoute.js";
+
 import { transactionRoute } from "./joinTable/transactionRoute.js";
-import { productitemRoute } from "./joinTable/productitemRoute.js";
-import { ordertableRoute } from "./joinTable/ordertableRoute.js";
-import { reservationtableRoute } from "./joinTable/reservationtableRoute.js";
+import { providerRoute } from "./table/providerRoute.js";
+import { itemRoute } from "./table/itemRoute.js";
+import { productRoute } from "./table/productRoute.js";
+import { orderRoute } from "./table/orderRoute.js";
+import { tableRoute } from "./table/tableRoute.js";
+import { reservationRoute } from "./table/reservationRoute.js";
+import { billRoute } from "./table/billRoute.js";
+import { staffRoute } from "./table/staffRoute.js";
+import { shiftRoute } from "./table/shiftRoute.js";
 import { orderitemRoute } from "./joinTable/orderitemRoute.js";
+import { reservationtableRoute } from "./joinTable/reservationtableRoute.js";
 import { staffshiftRoute } from "./joinTable/staffshiftRoute.js";
+import { ordertableRoute } from "./joinTable/ordertableRoute.js";
+import { productitemRoute } from "./joinTable/productitemRoute.js";
 import { reportRoute } from "./report/reportRoute.js";
 const Router = express.Router();
 // check api v1
