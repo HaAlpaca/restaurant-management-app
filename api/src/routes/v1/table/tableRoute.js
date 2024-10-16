@@ -5,8 +5,8 @@ import {
   getAllTable,
   getTableById,
   updateTableById,
-} from "../../controllers/v1/tableController.js";
-import { Validation } from "../../validations/Validation.js";
+} from "../../../controllers/v1/Table/tableController.js";
+import { Validation } from "../../../validations/Validation.js";
 
 const Router = express.Router();
 Router.route("/").post(createTable);

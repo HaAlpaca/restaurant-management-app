@@ -1,6 +1,5 @@
-import { pool } from "../../config/db.js";
+import { pool } from "../../../config/db.js";
 import { StatusCodes } from "http-status-codes";
-
 
 export const createBill = async (req, res, next) => {
   try {
@@ -33,7 +32,7 @@ export const createBill = async (req, res, next) => {
     // Lấy thông tin items trong đơn hàng
     const itemQuery = {
       text: `
-        SELECT i.name, oi.quantity, i.price, oi.description
+        SELECT i.name, oi.quantity, i.price
         FROM Orders_Items oi
         JOIN Items i ON oi.items_id = i.items_id
         WHERE oi.orders_id = $1
@@ -104,7 +103,7 @@ export const getBillById = async (req, res, next) => {
     // Lấy thông tin items trong đơn hàng liên quan đến hóa đơn
     const itemQuery = {
       text: `
-        SELECT i.name, oi.quantity, i.price, oi.description
+        SELECT i.name, oi.quantity, i.price
         FROM Orders_Items oi
         JOIN Items i ON oi.items_id = i.items_id
         JOIN Orders o ON oi.orders_id = o.orders_id
@@ -154,7 +153,7 @@ export const getAllBill = async (req, res, next) => {
       // Lấy thông tin items trong đơn hàng liên quan đến hóa đơn
       const itemQuery = {
         text: `
-          SELECT i.name, oi.quantity, i.price, oi.description
+          SELECT i.name, oi.quantity, i.price
           FROM Orders_Items oi
           JOIN Items i ON oi.items_id = i.items_id
           JOIN Orders o ON oi.orders_id = o.orders_id
@@ -210,4 +209,3 @@ export const deleteBillById = async (req, res, next) => {
     next(error);
   }
 };
-

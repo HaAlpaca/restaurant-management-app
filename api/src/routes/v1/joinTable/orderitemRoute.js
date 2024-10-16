@@ -1,7 +1,7 @@
 import express from "express";
 import {
   addOrdersItems,
-  deleteOrderFromItems,
+  deleteOrdersItems,
   getall,
   getItemsByOrder,
   getOrdersByItem,
@@ -12,6 +12,6 @@ const Router = express.Router();
 Router.get("/getall", getall);
 Router.get("/order/:id", getItemsByOrder);
 Router.post("/assign", addOrdersItems);
-Router.delete("/deleteorder/:id", deleteOrderFromItems);
+Router.delete("/remove", deleteOrdersItems);
 Router.get("/item/:id", getOrdersByItem);
 export const orderitemRoute = Router;

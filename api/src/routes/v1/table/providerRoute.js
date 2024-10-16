@@ -5,9 +5,9 @@ import {
   getAllProvider,
   getProviderById,
   updateProviderById,
-} from "../../controllers/v1/providerController.js";
-import upload from "../../middlewares/upload.js";
-import { Validation } from "../../validations/Validation.js";
+} from "../../../controllers/v1/Table/providerController.js";
+import upload from "../../../middlewares/upload.js";
+import { Validation } from "../../../validations/Validation.js";
 const Router = express.Router();
 Router.route("/").post(upload.single("image"), createProvider);
 Router.route("/getall").get(getAllProvider);

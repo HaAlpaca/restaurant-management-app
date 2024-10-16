@@ -1,18 +1,18 @@
 // Hàm filter và sort danh sách các mục theo đơn hàng
-export const filterAndSortItemsByOrder = async (
+export const filterAndSortItemsByProduct = async (
   pool,
-  orderId,
+  productId,
   filter,
   sort
 ) => {
   let query = `
-        SELECT i.*, oi.quantity as quantity_used
-        FROM orders_items oi
-        JOIN items i ON oi.items_id = i.items_id
-        WHERE oi.orders_id = $1
-      `;
+          SELECT i.*, pi.quantity as quantity_used
+          FROM Products_Items pi
+          JOIN items i ON pi.items_id = i.items_id
+          WHERE pi.products_id = $1
+        `;
 
-  const queryParams = [orderId]; // Khởi tạo với orderId
+  const queryParams = [productId]; // Khởi tạo với orderId
 
   // Nếu có filter, thêm điều kiện vào query
   if (filter) {
@@ -21,23 +21,28 @@ export const filterAndSortItemsByOrder = async (
   }
 
   // Sắp xếp theo thời gian tạo
-  query += ` ORDER BY oi.created_at ${sort === "desc" ? "DESC" : "ASC"}`;
+  query += ` ORDER BY pi.created_at ${sort === "desc" ? "DESC" : "ASC"}`;
 
   try {
-    const result = await pool.query(query, queryParams); // Truyền đúng số lượng tham số
+    const result = await pool.query(query, queryParams);
     return result.rows;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-export const filterAndSortOrdersByItem = async (pool, itemId, filter, sort) => {
+export const filterAndSortProductsByItem = async (
+  pool,
+  itemId,
+  filter,
+  sort
+) => {
   let query = `
-          SELECT o.*, oi.quantity as quantity_used
-          FROM orders_items oi
-          JOIN orders o ON o.orders_id = oi.orders_id
-          WHERE oi.items_id = $1
-        `;
+            SELECT p.*, pi.quantity as quantity_used
+            FROM Products_Items pi
+            JOIN products p ON p.products_id = pi.products_id
+            WHERE pi.items_id = $1
+          `;
   // Nếu có filter, thêm điều kiện vào query
   if (filter === "pending") {
     query += ` AND o.status = 'pending'`;
@@ -46,7 +51,7 @@ export const filterAndSortOrdersByItem = async (pool, itemId, filter, sort) => {
   }
 
   // Sắp xếp theo thời gian tạo đơn hàng
-  query += ` ORDER BY o.created_at ${sort === "desc" ? "DESC" : "ASC"}`;
+  query += ` ORDER BY pi.created_at ${sort === "desc" ? "DESC" : "ASC"}`;
 
   try {
     const result = await pool.query(query, [itemId]);

@@ -1,7 +1,7 @@
-import baseService from "../../services/v1/baseService.js";
-import ApiError from "../../utils/apiError.js";
+import baseService from "../../../services/v1/baseService.js";
+import ApiError from "../../../utils/apiError.js";
 import { StatusCodes } from "http-status-codes"; // Sử dụng mã trạng thái HTTP chuẩn
-
+1
 const baseController = (tableName, idColumn, fields, imageField = null) => {
   const service = baseService(tableName, idColumn, fields, imageField);
   return {

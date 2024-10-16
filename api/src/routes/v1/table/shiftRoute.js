@@ -5,8 +5,8 @@ import {
   getAllShift,
   getShiftById,
   updateShiftById,
-} from "../../controllers/v1/shiftController.js";
-import { Validation } from "../../validations/Validation.js";
+} from "../../../controllers/v1/Table/shiftController.js";
+import { Validation } from "../../../validations/Validation.js";
 
 const Router = express.Router();
 Router.route("/").post(createShift);

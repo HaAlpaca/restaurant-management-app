@@ -5,9 +5,9 @@ import {
   getAllItem,
   getItemById,
   updateItemById,
-} from "../../controllers/v1/itemController.js";
-import upload from "../../middlewares/upload.js";
-import { Validation } from "../../validations/Validation.js";
+} from "../../../controllers/v1/Table/itemController.js";
+import upload from "../../../middlewares/upload.js";
+import { Validation } from "../../../validations/Validation.js";
 
 const Router = express.Router();
 Router.route("/").post(upload.single("image"), createItem);
