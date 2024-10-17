@@ -14,9 +14,11 @@ import {
 //   updateTableForReservation,
 // } from "../../controllers/v1/joinTable/reservationTableController.js";
 import { Validation } from "../../../validations/Validation.js";
+import { SeedReservationData } from "../../../controllers/v1/Seed/reservationSeedController.js";
 const Router = express.Router();
 Router.route("/").post(createReservation);
 Router.route("/getall").get(getAllReservation);
+Router.route("/SeedData/:id").get(SeedReservationData);
 // Router.route("/jointable/:id")
 //   .post(addTableToReservation)
 //   .get(getTablefromReservation)
