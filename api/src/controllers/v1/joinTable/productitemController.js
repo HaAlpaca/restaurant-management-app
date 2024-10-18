@@ -5,25 +5,48 @@ import {
   filterAndSortProductsByItem,
 } from "../../../services/v1/productitemService.js";
 
-// Hàm thêm quan hệ giữa sản phẩm và mục
-const addProductItem = async (req, res) => {
+const addProductItem = async (req, res, next) => {
   const items = req.body; // Lấy mảng trực tiếp từ body
 
   try {
     // Kiểm tra nếu không có dữ liệu
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json();
+      return res.status(400).json("Missing type array in req.body");
     }
 
-    const addedProductsItems = []; // Mảng lưu trữ các bản ghi vừa được thêm
-
-    // Duyệt qua từng đối tượng trong mảng
+    // Kiểm tra tất cả các products và items trước khi tiến hành thêm
     for (const { products_id, items_id, quantity } of items) {
       // Kiểm tra nếu không đủ thông tin
       if (!products_id || !items_id || !quantity) {
-        return res.status(400).json();
+        return res
+          .status(400)
+          .json("Missing products_id or items_id or quantity");
       }
 
+      // Kiểm tra products_id có tồn tại không
+      const productExists = await pool.query(
+        `SELECT 1 FROM Products WHERE products_id = $1`,
+        [products_id]
+      );
+      if (productExists.rowCount === 0) {
+        return res
+          .status(400)
+          .json(`Products_id ${products_id} does not exist`);
+      }
+
+      // Kiểm tra items_id có tồn tại không
+      const itemExists = await pool.query(
+        `SELECT 1 FROM Items WHERE items_id = $1`,
+        [items_id]
+      );
+      if (itemExists.rowCount === 0) {
+        return res.status(400).json(`Items_id ${items_id} does not exist`);
+      }
+    }
+
+    // Nếu tất cả kiểm tra đều hợp lệ, bắt đầu thêm vào cơ sở dữ liệu
+    const addedProductsItems = [];
+    for (const { products_id, items_id, quantity } of items) {
       // Thêm quan hệ vào bảng Products_Items
       const result = await pool.query(
         `INSERT INTO Products_Items (products_id, items_id, quantity) 
@@ -36,7 +59,7 @@ const addProductItem = async (req, res) => {
 
     res.status(201).json(addedProductsItems);
   } catch (error) {
-    res.status(500).json();
+    next(error);
   }
 };
 

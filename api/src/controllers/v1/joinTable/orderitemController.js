@@ -5,24 +5,44 @@ import {
 } from "../../../services/v1/orderitemService.js";
 import { StatusCodes } from "http-status-codes";
 // Hàm thêm nhiều quan hệ giữa items và orders
-const addOrdersItems = async (req, res) => {
+const addOrdersItems = async (req, res, next) => {
   const items = req.body; // Lấy mảng trực tiếp từ body
 
   try {
     // Kiểm tra nếu không có dữ liệu
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json();
+      return res.status(400).json("Missing type array in req.body");
     }
 
-    const addedItemsOrders = []; // Mảng lưu trữ các bản ghi vừa được thêm
-
-    // Duyệt qua từng đối tượng trong mảng
+    // Kiểm tra tất cả các items trong mảng trước khi tiến hành thêm
     for (const { items_id, orders_id, quantity } of items) {
       // Kiểm tra nếu không đủ thông tin
       if (!items_id || !orders_id || !quantity) {
-        return res.status(400).json();
+        return res.status(400).json("Missing items_id or orders_id or quantity");
       }
 
+      // Kiểm tra items_id có tồn tại không
+      const itemExists = await pool.query(
+        `SELECT 1 FROM Items WHERE items_id = $1`,
+        [items_id]
+      );
+      if (itemExists.rowCount === 0) {
+        return res.status(400).json(`Items_id ${items_id} does not exist`);
+      }
+
+      // Kiểm tra orders_id có tồn tại không
+      const orderExists = await pool.query(
+        `SELECT 1 FROM Orders WHERE orders_id = $1`,
+        [orders_id]
+      );
+      if (orderExists.rowCount === 0) {
+        return res.status(400).json(`Orders_id ${orders_id} does not exist`);
+      }
+    }
+
+    // Nếu tất cả kiểm tra đều hợp lệ, bắt đầu thêm vào cơ sở dữ liệu
+    const addedItemsOrders = [];
+    for (const { items_id, orders_id, quantity } of items) {
       // Thêm quan hệ vào bảng orders_items
       const result = await pool.query(
         `INSERT INTO orders_items (items_id, orders_id, quantity) 
@@ -35,9 +55,10 @@ const addOrdersItems = async (req, res) => {
 
     res.status(201).json(addedItemsOrders);
   } catch (error) {
-    res.status(500).json(error);
+    next(error);
   }
 };
+
 
 // Hàm xử lý lấy danh sách các mục theo đơn hàng
 const getItemsByOrder = async (req, res) => {
