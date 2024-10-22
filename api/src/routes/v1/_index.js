@@ -35,7 +35,7 @@ Router.use("/bill", billRoute);
 Router.use("/staff", staffRoute);
 Router.use("/shift", shiftRoute);
 // join table
-// Router.use("/transaction", transactionRoute);
+Router.use("/transaction", transactionRoute);
 Router.use("/orderitem", orderitemRoute);
 Router.use("/reservationtable", reservationtableRoute);
 Router.use("/workingtime", staffshiftRoute);
