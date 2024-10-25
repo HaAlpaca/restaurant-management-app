@@ -4,6 +4,7 @@ const Fields = [
   "name",
   "birthday",
   "image_url",
+  "gender",
   "phone",
   "citizen_id",
   "role",
