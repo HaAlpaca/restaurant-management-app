@@ -1,5 +1,8 @@
 import express from "express";
 import {
+  getAllBillWithFilter,
+  getAllTransactionsWithFilter,
+  getStaffSalaryWithFilter,
   sumBill,
   sumBillForChart,
   sumItem,
@@ -13,4 +16,7 @@ Router.get("/sumbill", sumBill);
 Router.get("/sumproductfromprovider", sumProductfromProvider);
 Router.get("/sumbillforchart", sumBillForChart);
 Router.get("/tablestatusoccupied", tableStatusOccupied);
+Router.get("/reportbill", getAllBillWithFilter);
+Router.get("/report_transaction", getAllTransactionsWithFilter);
+Router.get("/report_staffsalary", getStaffSalaryWithFilter);
 export const reportRoute = Router;

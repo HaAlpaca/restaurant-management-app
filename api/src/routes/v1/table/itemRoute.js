@@ -3,6 +3,7 @@ import {
   createItem,
   deleteItemById,
   getAllItem,
+  getAllItemStatus,
   getItemById,
   updateItemById,
 } from "../../../controllers/v1/Table/itemController.js";
@@ -13,6 +14,7 @@ import { SeedItemData } from "../../../controllers/v1/Seed/itemSeedController.js
 const Router = express.Router();
 Router.route("/").post(upload.single("image"), createItem);
 Router.route("/getall").get(getAllItem);
+Router.route("/getallstatus").get(getAllItemStatus);
 Router.route("/SeedData/:id").get(SeedItemData);
 Router.route("/:id")
   .get(Validation.checkID, getItemById)

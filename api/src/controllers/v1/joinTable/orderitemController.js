@@ -74,7 +74,7 @@ const getItemsByOrder = async (req, res) => {
              WHERE o.orders_id = $1`,
       [orderId]
     );
-    console.log(orderResult);
+    // console.log(orderResult);
 
     // Kiểm tra nếu không tìm thấy bàn
     if (orderResult.rows.length === 0) {

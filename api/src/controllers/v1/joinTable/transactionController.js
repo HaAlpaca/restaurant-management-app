@@ -9,7 +9,7 @@ import {
 const getAllTransactions = async (req, res, next) => {
   try {
     const result = await pool.query(`SELECT * FROM Transactions`);
-    console.log(result);
+    // console.log(result);
     res.status(StatusCodes.OK).json(result.rows);
   } catch (error) {
     next(error);
@@ -74,7 +74,7 @@ const assignTransactions = async (req, res, next) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: `Product ID ${products_id} does not exist` });
     }
-    console.log(productExists.rows[0]);
+    // console.log(productExists.rows[0]);
     // So sánh `unit` của product và transaction
     const productUnit = productExists.rows[0].unit;
     if (productUnit !== unit) {
@@ -98,7 +98,7 @@ const assignTransactions = async (req, res, next) => {
         description,
       ]
     );
-    console.log(result);
+    // console.log(result);
     res.status(StatusCodes.CREATED).json(result.rows[0]);
   } catch (error) {
     next(error);

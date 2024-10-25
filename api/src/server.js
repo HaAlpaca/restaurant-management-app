@@ -70,7 +70,7 @@ const startApp = async () => {
     console.log("Environement build mode:", env.BUILD_MODE);
 
     START_SERVER(); // Khởi động server sau khi kết nối thành công
-    // await checkCloudinary();
+    await checkCloudinary();
   } catch (error) {
     console.error("Failed to connect to the database:", error);
     process.exit(1); // Thoát ứng dụng nếu không kết nối được với cơ sở dữ liệu

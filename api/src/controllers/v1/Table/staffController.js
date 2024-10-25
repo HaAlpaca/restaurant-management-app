@@ -7,7 +7,6 @@ const Fields = [
   "phone",
   "citizen_id",
   "role",
-  "salary",
   "wage",
   "username",
   "password_hash",
