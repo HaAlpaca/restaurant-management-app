@@ -52,7 +52,7 @@ const getShiftsByStaff = async (req, res) => {
   try {
     // Truy vấn để lấy thông tin nhân viên
     const staffResult = await pool.query(
-      `SELECT s.name, s.role
+      `SELECT s.*
          FROM staff s 
          WHERE s.staff_id = $1`,
       [id]
@@ -67,8 +67,7 @@ const getShiftsByStaff = async (req, res) => {
     const shifts = await filterShiftsByStaff(pool, id, filter, sort);
 
     res.status(StatusCodes.OK).json({
-      name: staffResult.rows[0].name,
-      role: staffResult.rows[0].role,
+      ...staffResult.rows[0],
       shifts: shifts, // Danh sách các ca làm việc đã được lọc và sắp xếp
     });
   } catch (error) {
@@ -139,4 +138,128 @@ const remove = async (req, res) => {
   }
 };
 
-export { assign, getShiftsByStaff, getStaffByShift, remove };
+const getAllShift = async (req, res) => {
+  const filter = req.query.filter || ""; // Lấy giá trị filter từ query params (mặc định là rỗng nếu không có)
+  const sort = req.query.sort || "asc"; // Lấy giá trị sort (mặc định là "asc" nếu không có)
+
+  try {
+    // Truy vấn để lấy thông tin tất cả các cột của nhân viên
+    const staffResult = await pool.query(
+      `SELECT s.*
+         FROM staff s 
+      `
+    );
+
+    const staffs = staffResult.rows; // Mảng chứa thông tin của các nhân viên
+    const staffShiftData = [];
+
+    // Sử dụng Promise.all để đảm bảo xử lý async cho từng nhân viên
+    await Promise.all(
+      staffs.map(async (staff) => {
+        // Lấy thông tin ca làm việc của nhân viên
+        const staffShifts = await filterShiftsByStaff(
+          pool,
+          staff.staff_id,
+          filter,
+          sort
+        );
+
+        // Tổ chức dữ liệu theo định dạng yêu cầu, bao gồm tất cả thông tin từ bảng staff
+        const staffData = {
+          ...staff, // Lấy tất cả các trường của nhân viên từ bảng staff
+          shifts: staffShifts,
+        };
+
+        staffShiftData.push(staffData); // Thêm vào mảng dữ liệu cuối cùng
+      })
+    );
+
+    // Trả về kết quả cho client
+    res.status(StatusCodes.OK).json(staffShiftData);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+// Hàm xóa ca làm khỏi nhân viên
+const removeById = async (req, res) => {
+  const { id } = req.params; // Lấy id từ params
+
+  try {
+    // Kiểm tra xem ID có tồn tại không
+    const checkResult = await pool.query(
+      "SELECT * FROM staff_shift WHERE staff_shift_id = $1",
+      [id]
+    );
+
+    if (checkResult.rowCount === 0) {
+      // Nếu không tìm thấy bản ghi với ID tương ứng
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy lịch làm việc với ID này" });
+    }
+
+    // Nếu ID tồn tại, tiến hành xóa
+    await pool.query("DELETE FROM staff_shift WHERE staff_shift_id = $1", [id]);
+
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Xoá lịch làm việc thành công" });
+  } catch (error) {
+    // Xử lý lỗi
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const updateAttendance = async (req, res) => {
+  const { id } = req.params; // Lấy staff_shift_id từ params
+
+  try {
+    // Kiểm tra xem ID có tồn tại không
+    const checkResult = await pool.query(
+      "SELECT is_attendance FROM staff_shift WHERE staff_shift_id = $1",
+      [id]
+    );
+
+    if (checkResult.rowCount === 0) {
+      // Nếu không tìm thấy bản ghi với ID tương ứng
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Không tìm thấy lịch làm việc với ID này" });
+    }
+
+    // Kiểm tra nếu ca làm việc đã được điểm danh
+    if (checkResult.rows[0].is_attendance) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Ca làm việc này đã được điểm danh rồi" });
+    }
+
+    // Nếu chưa điểm danh, tiến hành cập nhật is_attendance
+    await pool.query(
+      "UPDATE staff_shift SET is_attendance = true WHERE staff_shift_id = $1",
+      [id]
+    );
+
+    res.status(StatusCodes.OK).json({ message: "Điểm danh thành công" });
+  } catch (error) {
+    // Xử lý lỗi
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+export {
+  assign,
+  getShiftsByStaff,
+  getStaffByShift,
+  remove,
+  getAllShift,
+  removeById,
+  updateAttendance,
+};

@@ -8,16 +8,10 @@ const client = new pg.Client({
   },
 });
 const pool = new pg.Pool({
-  connectionString: env.PGSQL_CONNECTIONSTRING,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-const pool2 = new pg.Pool({
   connectionString: env.PGSQL_CONNECTIONSTRING2,
   ssl: {
     rejectUnauthorized: false,
   },
 });
 
-export { pool, client, pool2 };
+export { pool, client };

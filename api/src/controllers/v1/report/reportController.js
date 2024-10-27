@@ -138,7 +138,7 @@ export const tableStatusOccupied = async (req, res) => {
     const query = `
         SELECT tables_id, name, quantity, location, status, created_at, updated_at
           FROM public.tables
-        where status = 'occupied'
+        where status = 'Đang sử dụng'
     `;
 
     const result = await pool.query(query);
@@ -177,5 +177,222 @@ export const sumProductfromProvider = async (req, res) => {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Server error" });
+  }
+};
+
+export const getAllBillWithFilter = async (req, res, next) => {
+  try {
+    const { date, filter, sort = "DESC", limit } = req.query;
+    let timeFilter = "";
+
+    // Xác định điều kiện lọc theo tuần, tháng, năm, hoặc ngày
+    if (filter === "week") {
+      timeFilter = `date_trunc('week', b.created_at) = date_trunc('week', $1::date)`;
+    } else if (filter === "month") {
+      timeFilter = `date_trunc('month', b.created_at) = date_trunc('month', $1::date)`;
+    } else if (filter === "year") {
+      timeFilter = `date_trunc('year', b.created_at) = date_trunc('year', $1::date)`;
+    } else {
+      // Mặc định lọc theo ngày
+      timeFilter = `b.created_at::date = $1`;
+    }
+
+    // Đảm bảo sort chỉ nhận giá trị ASC hoặc DESC
+    const sortOrder = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+    // Tạo mệnh đề LIMIT nếu có
+    const limitClause = limit ? `LIMIT $2` : "";
+
+    // Truy vấn để lấy tất cả hóa đơn kèm điều kiện lọc, sắp xếp, và giới hạn
+    const billsQuery = {
+      text: `
+        SELECT * 
+        FROM Bill b
+        WHERE ${timeFilter}
+        ORDER BY b.created_at ${sortOrder}
+        ${limitClause}
+      `,
+      values: limit ? [date, limit] : [date], // Thêm giá trị limit nếu có
+    };
+
+    const billsResult = await pool.query(billsQuery);
+    console.log(billsResult.rows);
+
+    // Nếu không có hóa đơn nào
+    if (billsResult.rowCount === 0) {
+      return res.status(StatusCodes.OK).json({ message: "No bills found" });
+    }
+
+    // Mảng để lưu thông tin hóa đơn
+    const billsData = [];
+    let totalSum = 0; // Biến để tính tổng giá trị của tất cả hóa đơn
+
+    // Lặp qua từng hóa đơn để lấy thông tin chi tiết
+    for (const bill of billsResult.rows) {
+      // Lấy thông tin nhân viên liên quan đến hóa đơn
+      const staffQuery = {
+        text: "SELECT * FROM Staff WHERE staff_id = $1",
+        values: [bill.staff_id],
+      };
+      const staffResult = await pool.query(staffQuery);
+
+      // Lấy thông tin items trong đơn hàng liên quan đến hóa đơn
+      const itemQuery = {
+        text: `
+          SELECT i.name, oi.quantity, i.price
+          FROM Orders_Items oi
+          JOIN Items i ON oi.items_id = i.items_id
+          JOIN Orders o ON oi.orders_id = o.orders_id
+          WHERE o.orders_id = $1
+        `,
+        values: [bill.orders_id],
+      };
+      const itemResult = await pool.query(itemQuery);
+
+      // Chuyển đổi total từ chuỗi sang số và tính tổng
+      totalSum += parseFloat(bill.total) || 0; // Chuyển đổi và đảm bảo giá trị là số
+
+      // Đẩy thông tin hóa đơn vào mảng
+      billsData.push({
+        bill_id: bill.bill_id,
+        staff: staffResult.rows[0]?.name || "N/A", // Nếu không tìm thấy nhân viên, trả về "N/A"
+        items: itemResult.rows,
+        total: bill.total, // Chuyển đổi total sang số
+        created_at: bill.created_at,
+      });
+    }
+
+    // Trả về danh sách hóa đơn và tổng giá trị
+    res.status(StatusCodes.OK).json({
+      bills: billsData,
+      totalSum, // Tổng giá trị của tất cả các hóa đơn
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllTransactionsWithFilter = async (req, res, next) => {
+  try {
+    const { date, filter, sort = "DESC", limit } = req.query;
+    let timeFilter = "";
+
+    // Xác định điều kiện lọc theo tuần, tháng, năm, hoặc ngày
+    if (filter === "week") {
+      timeFilter = `date_trunc('week', t.created_at) = date_trunc('week', $1::date)`;
+    } else if (filter === "month") {
+      timeFilter = `date_trunc('month', t.created_at) = date_trunc('month', $1::date)`;
+    } else if (filter === "year") {
+      timeFilter = `date_trunc('year', t.created_at) = date_trunc('year', $1::date)`;
+    } else {
+      // Mặc định lọc theo ngày
+      timeFilter = `t.created_at::date = $1`;
+    }
+
+    // Đảm bảo sort chỉ nhận giá trị ASC hoặc DESC
+    const sortOrder = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+    // Tạo mệnh đề LIMIT nếu có
+    const limitClause = limit ? `LIMIT $2` : "";
+
+    // Truy vấn để lấy tất cả các giao dịch kèm điều kiện lọc, sắp xếp, và giới hạn
+    const transactionsQuery = {
+      text: `
+        SELECT t.*, p.name as product_name
+        FROM Transactions t
+        JOIN Products p on p.products_id = t.products_id
+        WHERE ${timeFilter}
+        ORDER BY t.created_at ${sortOrder}
+        ${limitClause}
+      `,
+      values: limit ? [date, limit] : [date], // Thêm giá trị limit nếu có
+    };
+
+    const transactionsResult = await pool.query(transactionsQuery);
+
+    // Nếu không có giao dịch nào
+    if (transactionsResult.rows.length === 0) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: "No transactions found" });
+    }
+
+    // Biến để lưu tổng tiền theo các trạng thái
+    let total_pending = 0;
+    let total_complete = 0;
+    let total = 0;
+
+    // Tính tổng dựa vào từng transaction
+    transactionsResult.rows.forEach((transaction) => {
+      total += parseFloat(transaction.price);
+      if (transaction.status === "Đang chờ") {
+        total_pending += parseFloat(transaction.price);
+      } else if (transaction.status === "Hoàn thành") {
+        total_complete += parseFloat(transaction.price);
+      }
+    });
+
+    // Trả về danh sách giao dịch cùng với các tổng đã tính toán
+    res.status(StatusCodes.OK).json({
+      transactions: transactionsResult.rows,
+      total_pending,
+      total_complete,
+      total,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStaffSalaryWithFilter = async (req, res, next) => {
+  try {
+    const { date, filter } = req.query;
+    let timeFilter = "";
+
+    // Xác định điều kiện lọc theo tuần, tháng, năm hoặc ngày
+    if (filter === "week") {
+      timeFilter = `date_trunc('week', ss.date) = date_trunc('week', $1::date)`;
+    } else if (filter === "month") {
+      timeFilter = `date_trunc('month', ss.date) = date_trunc('month', $1::date)`;
+    } else if (filter === "year") {
+      timeFilter = `date_trunc('year', ss.date) = date_trunc('year', $1::date)`;
+    } else {
+      // Mặc định lọc theo ngày
+      timeFilter = `ss.date::date = $1`;
+    }
+
+    // Truy vấn tính tổng tiền lương cho mỗi nhân viên
+    const salaryQuery = {
+      text: `
+        SELECT 
+          s.*,
+          (s.wage * COALESCE(SUM(EXTRACT(EPOCH FROM (sh.end_time - sh.start_time)) / 3600), 0)) AS salary
+        FROM 
+          Staff s
+        LEFT JOIN 
+          Staff_Shift ss ON s.staff_id = ss.staff_id
+        LEFT JOIN 
+          Shift sh ON ss.shift_id = sh.shift_id
+        WHERE 
+          ${timeFilter}
+          AND ss.is_attendance = TRUE
+        GROUP BY 
+          s.staff_id
+      `,
+      values: [date], // Giá trị cho tham số $1
+    };
+
+    // Thực hiện truy vấn
+    const salaryResult = await pool.query(salaryQuery);
+
+    // Kiểm tra kết quả
+    if (salaryResult.rows.length === 0) {
+      return res.status(StatusCodes.OK).json({ message: "No salaries found" });
+    }
+
+    // Trả về danh sách lương
+    res.status(StatusCodes.OK).json(salaryResult.rows);
+  } catch (error) {
+    next(error);
   }
 };

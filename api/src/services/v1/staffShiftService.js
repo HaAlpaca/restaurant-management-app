@@ -24,7 +24,7 @@ export const filterShiftsByStaff = async (
 
   // Truy vấn các ca làm việc của nhân viên với điều kiện lọc và sắp xếp
   const shiftsResult = await pool.query(
-    `SELECT sh.name AS shift_name, sh.start_time, sh.end_time, ss.date
+    `SELECT ss.staff_shift_id, sh.name AS shift_name, sh.start_time, sh.end_time, ss.date, ss.is_attendance
          FROM shift sh
          JOIN staff_shift ss ON sh.shift_id = ss.shift_id
          WHERE ss.staff_id = $1 ${filterCondition}
@@ -63,7 +63,7 @@ export const filterStaffByShift = async (
 
   // Truy vấn để lấy danh sách nhân viên theo ca làm việc với điều kiện lọc và sắp xếp
   const staffResult = await pool.query(
-    `SELECT st.name AS staff_name, st.role, ss.date
+    `SELECT st.*, ss.date
          FROM staff st
          JOIN staff_shift ss ON st.staff_id = ss.staff_id
          WHERE ss.shift_id = $1 ${filterCondition}
