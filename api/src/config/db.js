@@ -8,7 +8,7 @@ const client = new pg.Client({
   },
 });
 const pool = new pg.Pool({
-  connectionString: env.PGSQL_CONNECTIONSTRING2,
+  connectionString: env.PGSQL_CONNECTIONSTRING,
   ssl: {
     rejectUnauthorized: false,
   },
