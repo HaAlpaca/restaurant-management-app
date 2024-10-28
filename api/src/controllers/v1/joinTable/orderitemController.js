@@ -17,18 +17,18 @@ const addOrdersItems = async (req, res, next) => {
     }
 
     // Kiểm tra xem trong mảng có phần tử nào trùng lặp cặp items_id và orders_id không
-    const uniquePairs = new Set();
-    for (const { items_id, orders_id } of items) {
-      const pairKey = `${items_id}-${orders_id}`; // Tạo một key duy nhất cho mỗi cặp
+    // const uniquePairs = new Set();
+    // for (const { items_id, orders_id } of items) {
+    //   const pairKey = `${items_id}-${orders_id}`; // Tạo một key duy nhất cho mỗi cặp
 
-      if (uniquePairs.has(pairKey)) {
-        return res.status(400).json({
-          message: `Duplicate pair of items_id ${items_id} and orders_id ${orders_id} in the array`,
-        });
-      }
+    //   if (uniquePairs.has(pairKey)) {
+    //     return res.status(400).json({
+    //       message: `Duplicate pair of items_id ${items_id} and orders_id ${orders_id} in the array`,
+    //     });
+    //   }
 
-      uniquePairs.add(pairKey);
-    }
+    //   uniquePairs.add(pairKey);
+    // }
 
     // Kiểm tra tất cả các items trong mảng trước khi tiến hành thêm
     for (const { items_id, orders_id, quantity } of items) {
@@ -62,15 +62,15 @@ const addOrdersItems = async (req, res, next) => {
       }
 
       // Kiểm tra xem cặp items_id và orders_id đã tồn tại trong orders_items chưa
-      const existingPair = await pool.query(
-        `SELECT 1 FROM orders_items WHERE items_id = $1 AND orders_id = $2`,
-        [items_id, orders_id]
-      );
-      if (existingPair.rowCount > 0) {
-        return res.status(400).json({
-          message: `The pair of items_id ${items_id} and orders_id ${orders_id} already exists in the database`,
-        });
-      }
+      // const existingPair = await pool.query(
+      //   `SELECT 1 FROM orders_items WHERE items_id = $1 AND orders_id = $2`,
+      //   [items_id, orders_id]
+      // );
+      // if (existingPair.rowCount > 0) {
+      //   return res.status(400).json({
+      //     message: `The pair of items_id ${items_id} and orders_id ${orders_id} already exists in the database`,
+      //   });
+      // }
     }
 
     // Nếu tất cả kiểm tra đều hợp lệ, bắt đầu thêm vào cơ sở dữ liệu

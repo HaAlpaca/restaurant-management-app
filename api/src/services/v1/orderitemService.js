@@ -6,7 +6,7 @@ export const filterAndSortItemsByOrder = async (
   sort
 ) => {
   let query = `
-        SELECT i.*, oi.quantity as quantity_used
+        SELECT i.*, oi.quantity as quantity_used,oi.orders_items_id
         FROM orders_items oi
         JOIN items i ON oi.items_id = i.items_id
         WHERE oi.orders_id = $1
@@ -33,7 +33,7 @@ export const filterAndSortItemsByOrder = async (
 
 export const filterAndSortOrdersByItem = async (pool, itemId, filter, sort) => {
   let query = `
-          SELECT o.*, oi.quantity as quantity_used
+          SELECT o.*, oi.quantity as quantity_used,oi.orders_items_id
           FROM orders_items oi
           JOIN orders o ON o.orders_id = oi.orders_id
           WHERE oi.items_id = $1
