@@ -5,8 +5,6 @@ import express from "express";
 import { env } from "./config/environment.js";
 import { pool } from "./config/db.js";
 // swagger
-import swaggerUi from "swagger-ui-express";
-import swaggerJSDoc from "swagger-jsdoc";
 
 //import routes
 import demoRoutes from "./routes/demoRoutes/demoRoutes.js";
@@ -17,11 +15,11 @@ import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware.j
 import { APIs_v1 } from "./routes/v1/_index.js";
 import { checkCloudinary } from "./config/cloudinary.js";
 import cors from "cors";
+import { jwtCheck } from "./middlewares/jwt.js";
 
 //dotenv
 const START_SERVER = () => {
   const app = express();
-
   app.use(express.json());
   app.use(express.urlencoded({ extended: false })); // parse form data in the req.body
   app.use(
@@ -29,24 +27,7 @@ const START_SERVER = () => {
       origin: "*",
     })
   );
-  const swaggerOptions = {
-    swaggerDefinition: {
-      info: {
-        version: "1.0.0",
-        title: "Customer API",
-        description: "Customer API Information",
-        contact: {
-          name: "Developer",
-        },
-        servers: [`http://localhost:${env.PORT || 5000}`],
-      },
-    },
-    // ['.routes/*.js']
-    apis: ["server.js"],
-  };
-
-  const swaggerDocs = swaggerJSDoc(swaggerOptions);
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+  app.use(jwtCheck);
   // demo table
   // routes
   app.use("/api", APIs_v1);
