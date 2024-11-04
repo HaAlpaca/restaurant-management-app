@@ -6,11 +6,13 @@ import {
   getProductByProvider,
   getProviderByProduct,
   getTransactionById,
+  updateTransaction,
 } from "../../../controllers/v1/joinTable/transactionController.js";
 const Router = express.Router();
 
 Router.get("/getall", getAllTransactions);
 Router.get("/:id", getTransactionById);
+Router.patch("/:id", updateTransaction);
 Router.post("/assign", assignTransactions);
 Router.get("/product/:id", getProviderByProduct);
 Router.get("/provider/:id", getProductByProvider);

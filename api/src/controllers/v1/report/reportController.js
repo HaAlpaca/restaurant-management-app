@@ -216,7 +216,6 @@ export const getAllBillWithFilter = async (req, res, next) => {
     };
 
     const billsResult = await pool.query(billsQuery);
-    console.log(billsResult.rows);
 
     // Nếu không có hóa đơn nào
     if (billsResult.rowCount === 0) {
@@ -239,7 +238,7 @@ export const getAllBillWithFilter = async (req, res, next) => {
       // Lấy thông tin items trong đơn hàng liên quan đến hóa đơn
       const itemQuery = {
         text: `
-          SELECT i.name, oi.quantity, i.price
+          SELECT i.items_id, i.name, oi.quantity, i.price
           FROM Orders_Items oi
           JOIN Items i ON oi.items_id = i.items_id
           JOIN Orders o ON oi.orders_id = o.orders_id
@@ -249,15 +248,27 @@ export const getAllBillWithFilter = async (req, res, next) => {
       };
       const itemResult = await pool.query(itemQuery);
 
+      // Tính tổng số lượng cho các items có cùng items_id
+      const aggregatedItems = {};
+      itemResult.rows.forEach((item) => {
+        if (!aggregatedItems[item.items_id]) {
+          aggregatedItems[item.items_id] = { ...item, quantity: 0 };
+        }
+        aggregatedItems[item.items_id].quantity += item.quantity;
+      });
+
+      // Chuyển đổi đối tượng thành mảng
+      const uniqueItems = Object.values(aggregatedItems);
+
       // Chuyển đổi total từ chuỗi sang số và tính tổng
-      totalSum += parseFloat(bill.total) || 0; // Chuyển đổi và đảm bảo giá trị là số
+      totalSum += parseFloat(bill.total) || 0;
 
       // Đẩy thông tin hóa đơn vào mảng
       billsData.push({
         bill_id: bill.bill_id,
         staff: staffResult.rows[0]?.name || "N/A", // Nếu không tìm thấy nhân viên, trả về "N/A"
-        items: itemResult.rows,
-        total: bill.total, // Chuyển đổi total sang số
+        items: uniqueItems,
+        total: bill.total,
         created_at: bill.created_at,
       });
     }
@@ -265,7 +276,100 @@ export const getAllBillWithFilter = async (req, res, next) => {
     // Trả về danh sách hóa đơn và tổng giá trị
     res.status(StatusCodes.OK).json({
       bills: billsData,
-      totalSum, // Tổng giá trị của tất cả các hóa đơn
+      totalSum,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllBillWith2Filter = async (req, res, next) => {
+  try {
+    const { start_date, end_date, sort = "DESC", limit } = req.query;
+
+    // Xác định điều kiện lọc theo khoảng thời gian start_date và end_date
+    const timeFilter = `b.created_at BETWEEN $1 AND $2`;
+
+    // Đảm bảo `sort` chỉ nhận giá trị ASC hoặc DESC
+    const sortOrder = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+    // Tạo mệnh đề LIMIT nếu có
+    const limitClause = limit ? `LIMIT $3` : "";
+
+    // Truy vấn để lấy tất cả hóa đơn kèm điều kiện lọc, sắp xếp, và giới hạn
+    const billsQuery = {
+      text: `
+        SELECT * 
+        FROM Bill b
+        WHERE ${timeFilter}
+        ORDER BY b.created_at ${sortOrder}
+        ${limitClause}
+      `,
+      values: limit ? [start_date, end_date, limit] : [start_date, end_date],
+    };
+
+    const billsResult = await pool.query(billsQuery);
+
+    // Nếu không có hóa đơn nào
+    if (billsResult.rowCount === 0) {
+      return res.status(StatusCodes.OK).json({ message: "No bills found" });
+    }
+
+    // Mảng để lưu thông tin hóa đơn
+    const billsData = [];
+    let totalSum = 0; // Biến để tính tổng giá trị của tất cả hóa đơn
+
+    // Lặp qua từng hóa đơn để lấy thông tin chi tiết
+    for (const bill of billsResult.rows) {
+      // Lấy thông tin nhân viên liên quan đến hóa đơn
+      const staffQuery = {
+        text: "SELECT * FROM Staff WHERE staff_id = $1",
+        values: [bill.staff_id],
+      };
+      const staffResult = await pool.query(staffQuery);
+
+      // Lấy thông tin items trong đơn hàng liên quan đến hóa đơn
+      const itemQuery = {
+        text: `
+          SELECT i.items_id, i.name, oi.quantity, i.price
+          FROM Orders_Items oi
+          JOIN Items i ON oi.items_id = i.items_id
+          JOIN Orders o ON oi.orders_id = o.orders_id
+          WHERE o.orders_id = $1
+        `,
+        values: [bill.orders_id],
+      };
+      const itemResult = await pool.query(itemQuery);
+
+      // Tạo một đối tượng để lưu trữ tổng số lượng của mỗi item dựa trên items_id
+      const aggregatedItems = {};
+      itemResult.rows.forEach((item) => {
+        if (!aggregatedItems[item.items_id]) {
+          aggregatedItems[item.items_id] = { ...item, quantity: 0 };
+        }
+        aggregatedItems[item.items_id].quantity += item.quantity;
+      });
+
+      // Chuyển đổi đối tượng thành mảng
+      const uniqueItems = Object.values(aggregatedItems);
+
+      // Chuyển đổi total từ chuỗi sang số và tính tổng
+      totalSum += parseFloat(bill.total) || 0;
+
+      // Đẩy thông tin hóa đơn vào mảng
+      billsData.push({
+        bill_id: bill.bill_id,
+        staff: staffResult.rows[0]?.name || "N/A", // Nếu không tìm thấy nhân viên, trả về "N/A"
+        items: uniqueItems,
+        total: bill.total,
+        created_at: bill.created_at,
+      });
+    }
+
+    // Trả về danh sách hóa đơn và tổng giá trị
+    res.status(StatusCodes.OK).json({
+      bills: billsData,
+      totalSum,
     });
   } catch (error) {
     next(error);

@@ -105,6 +105,53 @@ const assignTransactions = async (req, res, next) => {
   }
 };
 
+const updateTransaction = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const fieldsToUpdate = req.body;
+
+    // Kiểm tra nếu không có fields để cập nhật
+    if (Object.keys(fieldsToUpdate).length === 0) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "No fields provided to update" });
+    }
+
+    // Tạo các phần query động để cập nhật chỉ những fields được cung cấp
+    const setClause = [];
+    const values = [];
+    let index = 1;
+
+    for (const [key, value] of Object.entries(fieldsToUpdate)) {
+      setClause.push(`${key} = $${index}`);
+      values.push(value);
+      index++;
+    }
+
+    values.push(id); // Thêm transactions_id vào cuối để dùng trong điều kiện WHERE
+
+    const query = `
+      UPDATE Transactions
+      SET ${setClause.join(", ")}
+      WHERE transactions_id = $${index}
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, values);
+
+    // Nếu không tìm thấy transaction với transactions_id đã cho
+    if (result.rowCount === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: `Transaction ID ${id} not found` });
+    }
+
+    res.status(StatusCodes.OK).json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getTransactionById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -237,4 +284,5 @@ export {
   getProductByProvider,
   getProviderByProduct,
   deleteTransaction,
+  updateTransaction,
 };
