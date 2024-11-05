@@ -8,13 +8,38 @@ import {
 // Hàm lấy tất cả giao dịch
 const getAllTransactions = async (req, res, next) => {
   try {
-    const result = await pool.query(`SELECT * FROM Transactions`);
-    // console.log(result);
+    const { start_date, end_date, sort = "DESC" } = req.query;
+
+    // Tạo điều kiện lọc cho khoảng thời gian nếu start_date và end_date được cung cấp
+    const timeFilter = start_date && end_date ? `created_at BETWEEN $1 AND $2` : "TRUE";
+
+    // Xác định thứ tự sắp xếp (ASC hoặc DESC)
+    const sortOrder = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+    // Xây dựng câu truy vấn với điều kiện lọc thời gian và sắp xếp
+    const transactionsQuery = {
+      text: `
+        SELECT * 
+        FROM Transactions
+        WHERE ${timeFilter}
+        ORDER BY created_at ${sortOrder}
+      `,
+      values: start_date && end_date ? [start_date, end_date] : [],
+    };
+
+    const result = await pool.query(transactionsQuery);
+
+    // Nếu không có giao dịch nào
+    if (result.rowCount === 0) {
+      return res.status(StatusCodes.OK).json({ message: "No transactions found" });
+    }
+
     res.status(StatusCodes.OK).json(result.rows);
   } catch (error) {
     next(error);
   }
 };
+
 
 const getAllTransactionsForReport = async (req, res, next) => {
   try {
