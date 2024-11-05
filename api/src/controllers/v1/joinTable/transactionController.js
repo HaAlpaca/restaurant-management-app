@@ -16,6 +16,112 @@ const getAllTransactions = async (req, res, next) => {
   }
 };
 
+const getAllTransactionsForReport = async (req, res, next) => {
+  try {
+    const { date, filter, sort = "DESC", limit } = req.query;
+    let timeFilter = "";
+
+    // Xác định điều kiện lọc theo tuần, tháng, năm, hoặc ngày
+    if (filter === "week") {
+      timeFilter = `date_trunc('week', t.created_at) = date_trunc('week', $1::date)`;
+    } else if (filter === "month") {
+      timeFilter = `date_trunc('month', t.created_at) = date_trunc('month', $1::date)`;
+    } else if (filter === "year") {
+      timeFilter = `date_trunc('year', t.created_at) = date_trunc('year', $1::date)`;
+    } else {
+      // Mặc định lọc theo ngày
+      timeFilter = `t.created_at::date = $1`;
+    }
+
+    // Đảm bảo sort chỉ nhận giá trị ASC hoặc DESC
+    const sortOrder = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+    // Tạo mệnh đề LIMIT nếu có
+    const limitClause = limit ? `LIMIT $2` : "";
+
+    // Truy vấn lấy tất cả các giao dịch với bộ lọc, sắp xếp và giới hạn
+    const transactionsQuery = {
+      text: `
+        SELECT *
+        FROM Transactions t
+        WHERE ${timeFilter}
+        ORDER BY t.created_at ${sortOrder}
+        ${limitClause}
+      `,
+      values: limit ? [date, limit] : [date],
+    };
+
+    const transactionsResult = await pool.query(transactionsQuery);
+
+    // Nếu không có giao dịch nào
+    if (transactionsResult.rowCount === 0) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: "No transactions found" });
+    }
+
+    const transactionsData = [];
+    const dailyTotals = {}; // Đối tượng để lưu tổng giá trị theo ngày
+    let totalCompleted = 0; // Tổng giá trị cho giao dịch "Hoàn thành"
+    let totalPending = 0; // Tổng giá trị cho giao dịch "Đang chờ"
+    let totalCancelled = 0; // Tổng giá trị cho giao dịch "Đã huỷ"
+    let totalSum = 0; // Tổng giá trị cho tất cả các giao dịch
+
+    for (const transaction of transactionsResult.rows) {
+      const transactionTotal = parseFloat(transaction.price) || 0;
+      const transactionDate = transaction.created_at
+        .toISOString()
+        .split("T")[0]; // Lấy ngày từ created_at
+
+      // Cộng dồn tổng giá trị cho từng ngày
+      if (!dailyTotals[transactionDate]) {
+        dailyTotals[transactionDate] = 0;
+      }
+      dailyTotals[transactionDate] += transactionTotal;
+
+      // Cộng tổng giá trị dựa trên trạng thái
+      if (transaction.status === "Hoàn thành") {
+        totalCompleted += transactionTotal;
+      } else if (transaction.status === "Đang chờ") {
+        totalPending += transactionTotal;
+      } else if (transaction.status === "Đã huỷ") {
+        totalCancelled += transactionTotal;
+      }
+
+      // Cộng tổng giá trị của tất cả giao dịch
+      totalSum += transactionTotal;
+
+      // Đẩy thông tin giao dịch vào mảng
+      transactionsData.push({
+        transaction_id: transaction.transactions_id,
+        staff_id: transaction.staff_id,
+        providers_id: transaction.providers_id,
+        products_id: transaction.products_id,
+        status: transaction.status,
+        name: transaction.name,
+        quantity: transaction.quantity,
+        unit: transaction.unit,
+        price: transaction.price,
+        description: transaction.description,
+        created_at: transaction.created_at,
+        updated_at: transaction.updated_at,
+      });
+    }
+
+    // Trả về danh sách giao dịch, tổng giá trị cho từng trạng thái, tổng giá trị theo ngày và tổng giá trị tổng cộng
+    res.status(StatusCodes.OK).json({
+      transactions: transactionsData,
+      totalCompleted, // Tổng giá trị cho các giao dịch "Hoàn thành"
+      totalPending, // Tổng giá trị cho các giao dịch "Đang chờ"
+      totalCancelled, // Tổng giá trị cho các giao dịch "Đã huỷ"
+      dailyTotals, // Tổng giá trị theo từng ngày
+      totalSum, // Tổng giá trị tổng cộng của tất cả các giao dịch
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const assignTransactions = async (req, res, next) => {
   try {
     const {
@@ -278,6 +384,7 @@ const deleteTransaction = async (req, res, next) => {
 };
 
 export {
+  getAllTransactionsForReport,
   getAllTransactions,
   assignTransactions,
   getTransactionById,

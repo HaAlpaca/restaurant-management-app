@@ -224,7 +224,8 @@ export const getAllBillWithFilter = async (req, res, next) => {
 
     // Mảng để lưu thông tin hóa đơn
     const billsData = [];
-    let totalSum = 0; // Biến để tính tổng giá trị của tất cả hóa đơn
+    const dailyTotals = {}; // Đối tượng để lưu tổng giá trị theo ngày
+    let totalSum = 0; // Tổng giá trị của tất cả hóa đơn
 
     // Lặp qua từng hóa đơn để lấy thông tin chi tiết
     for (const bill of billsResult.rows) {
@@ -260,8 +261,18 @@ export const getAllBillWithFilter = async (req, res, next) => {
       // Chuyển đổi đối tượng thành mảng
       const uniqueItems = Object.values(aggregatedItems);
 
-      // Chuyển đổi total từ chuỗi sang số và tính tổng
-      totalSum += parseFloat(bill.total) || 0;
+      // Chuyển đổi total từ chuỗi sang số và tính tổng theo ngày
+      const billTotal = parseFloat(bill.total) || 0;
+      const billDate = bill.created_at.toISOString().split("T")[0]; // Lấy ngày từ created_at
+
+      // Cộng dồn giá trị hóa đơn cho từng ngày
+      if (!dailyTotals[billDate]) {
+        dailyTotals[billDate] = 0;
+      }
+      dailyTotals[billDate] += billTotal;
+
+      // Cộng tổng giá trị của tất cả hóa đơn
+      totalSum += billTotal;
 
       // Đẩy thông tin hóa đơn vào mảng
       billsData.push({
@@ -273,10 +284,11 @@ export const getAllBillWithFilter = async (req, res, next) => {
       });
     }
 
-    // Trả về danh sách hóa đơn và tổng giá trị
+    // Trả về danh sách hóa đơn, tổng giá trị theo ngày và tổng giá trị tổng cộng
     res.status(StatusCodes.OK).json({
       bills: billsData,
-      totalSum,
+      dailyTotals, // Tổng giá trị hóa đơn theo từng ngày
+      totalSum, // Tổng giá trị của tất cả hóa đơn
     });
   } catch (error) {
     next(error);

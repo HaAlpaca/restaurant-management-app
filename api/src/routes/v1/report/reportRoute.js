@@ -9,6 +9,7 @@ import {
   sumProductfromProvider,
   tableStatusOccupied,
 } from "../../../controllers/v1/report/reportController.js";
+import { getAllTransactionsForReport } from "../../../controllers/v1/joinTable/transactionController.js";
 const Router = express.Router();
 
 Router.get("/sumitem", sumItem);
@@ -17,6 +18,7 @@ Router.get("/sumproductfromprovider", sumProductfromProvider);
 Router.get("/sumbillforchart", sumBillForChart);
 Router.get("/tablestatusoccupied", tableStatusOccupied);
 Router.get("/reportbill", getAllBillWithFilter);
+Router.get("/transaction", getAllTransactionsForReport);
 Router.get("/report_transaction", getAllTransactionsWithFilter);
 Router.get("/report_staffsalary", getStaffSalaryWithFilter);
 export const reportRoute = Router;
