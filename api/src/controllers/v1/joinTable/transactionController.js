@@ -11,7 +11,8 @@ const getAllTransactions = async (req, res, next) => {
     const { start_date, end_date, sort = "DESC" } = req.query;
 
     // Tạo điều kiện lọc cho khoảng thời gian nếu start_date và end_date được cung cấp
-    const timeFilter = start_date && end_date ? `created_at BETWEEN $1 AND $2` : "TRUE";
+    const timeFilter =
+      start_date && end_date ? `created_at BETWEEN $1 AND $2` : "TRUE";
 
     // Xác định thứ tự sắp xếp (ASC hoặc DESC)
     const sortOrder = sort.toUpperCase() === "ASC" ? "ASC" : "DESC";
@@ -31,7 +32,9 @@ const getAllTransactions = async (req, res, next) => {
 
     // Nếu không có giao dịch nào
     if (result.rowCount === 0) {
-      return res.status(StatusCodes.OK).json({ message: "No transactions found" });
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: "No transactions found" });
     }
 
     res.status(StatusCodes.OK).json(result.rows);
@@ -39,7 +42,6 @@ const getAllTransactions = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const getAllTransactionsForReport = async (req, res, next) => {
   try {
@@ -161,20 +163,7 @@ const assignTransactions = async (req, res, next) => {
       description,
     } = req.body;
 
-    if (
-      !staff_id ||
-      !providers_id ||
-      !products_id ||
-      !status ||
-      !name ||
-      !quantity ||
-      !unit ||
-      !price
-    ) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "Missing required fields" });
-    }
+
     const staffExists = await pool.query(
       `SELECT 1 FROM Staff WHERE staff_id = $1`,
       [staff_id]
