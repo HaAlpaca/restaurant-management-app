@@ -24,7 +24,7 @@ const START_SERVER = () => {
   const app = express();
 
   app.use(express.json());
-  app.use(express.urlencoded({ extended: false })); // parse form data in the req.body
+  app.use(express.urlencoded({ extended: true })); // parse form data in the req.body
   // app.use(
   //   cors({
   //     origin: "*",

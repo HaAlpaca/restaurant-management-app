@@ -17,6 +17,7 @@ import { staffshiftRoute } from "./joinTable/staffshiftRoute.js";
 import { productitemRoute } from "./joinTable/productitemRoute.js";
 import { reportRoute } from "./report/reportRoute.js";
 import { authRoute } from "./authRoute.js";
+import { authMiddleware } from "../../middlewares/authMiddleware.js";
 const Router = express.Router();
 // check api v1
 Router.get("/status", (req, res) => {
@@ -44,4 +45,10 @@ Router.use("/productitem", productitemRoute);
 Router.use("/report", reportRoute);
 // auth
 Router.use("/auth", authRoute);
+// test auth
+Router.use(
+  "/test_auth_item",
+  authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
+  itemRoute
+);
 export const APIs_v1 = Router;

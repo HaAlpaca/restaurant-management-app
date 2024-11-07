@@ -34,7 +34,7 @@ const isAuthorized = (allowedRoles = []) => {
       // Cho phép tiếp tục nếu hợp lệ
       next();
     } catch (error) {
-      console.log("Error from authMiddleware: ", error);
+      // console.log("Error from authMiddleware: ", error);
       if (error.message?.includes("jwt expired")) {
         return res
           .status(StatusCodes.GONE)

@@ -48,6 +48,7 @@ const login = async (req, res) => {
     const accessToken = await JwtProvider.generateToken(
       userInfo,
       env.ACCESS_TOKEN_SECRET_SIGNATURE,
+      // 20
       "1h"
     );
     const refreshToken = await JwtProvider.generateToken(
@@ -95,11 +96,14 @@ const refreshToken = async (req, res) => {
     const userInfo = {
       id: refreshTokenDecoded.id,
       email: refreshTokenDecoded.email,
+      username: refreshTokenDecoded.username,
+      role: refreshTokenDecoded.role,
     };
     // tao accesstoken moi
     const accessToken = await JwtProvider.generateToken(
       userInfo,
       env.ACCESS_TOKEN_SECRET_SIGNATURE,
+      // 20
       "1h"
     );
     // tra ve access token trong response de dinh vao localstorage
@@ -110,4 +114,6 @@ const refreshToken = async (req, res) => {
       .json({ message: "Generate refresh token failed" });
   }
 };
+
+
 export const authController = { refreshToken, logout, login };
