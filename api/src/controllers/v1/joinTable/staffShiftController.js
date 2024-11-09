@@ -145,7 +145,7 @@ const getAllShift = async (req, res) => {
   try {
     // Truy vấn để lấy thông tin tất cả các cột của nhân viên
     const staffResult = await pool.query(
-      `SELECT s.*
+      `SELECT s.staff_id,s.name
          FROM staff s 
       `
     );
