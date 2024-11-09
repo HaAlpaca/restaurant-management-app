@@ -26,7 +26,11 @@ Router.get("/status", (req, res) => {
     .json({ message: "API v1 already to use.", status: StatusCodes.OK });
 });
 //bill APIs
-Router.use("/provider", providerRoute);
+Router.use(
+  "/provider",
+  authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
+  providerRoute
+);
 Router.use("/item", itemRoute);
 Router.use("/product", productRoute);
 Router.use("/order", orderRoute);
@@ -50,5 +54,10 @@ Router.use(
   "/test_auth_item",
   authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
   itemRoute
+);
+Router.use(
+  "/test_auth_reservation",
+  authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  reservationRoute
 );
 export const APIs_v1 = Router;

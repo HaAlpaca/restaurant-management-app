@@ -115,5 +115,4 @@ const refreshToken = async (req, res) => {
   }
 };
 
-
 export const authController = { refreshToken, logout, login };
