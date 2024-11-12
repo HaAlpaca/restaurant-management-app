@@ -103,7 +103,7 @@ export const getBillById = async (req, res, next) => {
     // Lấy thông tin items trong đơn hàng liên quan đến hóa đơn
     const itemQuery = {
       text: `
-        SELECT i.name, oi.quantity, i.price
+        SELECT i.items_id, i.name, oi.quantity, i.price
         FROM Orders_Items oi
         JOIN Items i ON oi.items_id = i.items_id
         JOIN Orders o ON oi.orders_id = o.orders_id
@@ -113,11 +113,23 @@ export const getBillById = async (req, res, next) => {
     };
     const itemResult = await pool.query(itemQuery);
 
+    // Tính tổng số lượng cho các items có cùng items_id
+    const aggregatedItems = {};
+    itemResult.rows.forEach((item) => {
+      if (!aggregatedItems[item.items_id]) {
+        aggregatedItems[item.items_id] = { ...item, quantity: 0 };
+      }
+      aggregatedItems[item.items_id].quantity += item.quantity;
+    });
+
+    // Chuyển đổi đối tượng thành mảng duy nhất các item
+    const uniqueItems = Object.values(aggregatedItems);
+
     // Trả về dữ liệu hóa đơn
     res.status(StatusCodes.OK).json({
       bill_id: billData.bill_id,
       staff: staffResult.rows[0]?.name || "N/A", // Nếu không tìm thấy nhân viên, trả về "N/A"
-      items: itemResult.rows,
+      items: uniqueItems,
       total: billData.total,
       created_at: billData.created_at,
     });
@@ -125,6 +137,7 @@ export const getBillById = async (req, res, next) => {
     next(error);
   }
 };
+
 export const getAllBill = async (req, res, next) => {
   try {
     // Lấy tất cả hóa đơn
