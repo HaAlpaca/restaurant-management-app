@@ -55,6 +55,7 @@ const login = async (req, res) => {
       userInfo,
       env.REFRESH_TOKEN_SECRET_SIGNATURE,
       "14 days"
+      // 30
     );
 
     // Trả về token cho FE lưu vào localStorage

@@ -8,6 +8,7 @@ import {
   getOrderById,
   getOrderByReservation,
   updateOrder,
+  updateOrderById,
 } from "../../../controllers/v1/Table/orderController.js";
 import { Validation } from "../../../validations/Validation.js";
 import { SeedOrderData } from "../../../controllers/v1/Seed/orderSeedController.js";
@@ -20,6 +21,6 @@ Router.route("/getall").get(getAllOrder);
 Router.route("/SeedData/:id").get(SeedOrderData);
 Router.route("/:id")
   .get(Validation.checkID, getOrderById)
-  .patch(Validation.checkID, updateOrder)
+  .patch(Validation.checkID, updateOrderById)
   .delete(Validation.checkID, deleteOrderById);
 export const orderRoute = Router;
