@@ -25,35 +25,151 @@ Router.get("/status", (req, res) => {
     .status(StatusCodes.OK)
     .json({ message: "API v1 already to use.", status: StatusCodes.OK });
 });
-//bill APIs
+
 Router.use(
   "/provider",
-  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  // authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
   providerRoute
 );
 Router.use(
   "/item",
-  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
   itemRoute
 );
-Router.use("/product",authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]), productRoute);
-Router.use("/order", orderRoute);
-Router.use("/table", tableRoute);
-Router.use("/reservation", reservationRoute);
-Router.use("/bill", billRoute);
-Router.use("/staff", staffRoute);
-Router.use("/shift", shiftRoute);
+Router.use(
+  "/product",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  productRoute
+);
+Router.use(
+  "/order",
+  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  orderRoute
+);
+Router.use(
+  "/table",
+  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  tableRoute
+);
+Router.use(
+  "/reservation",
+  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  reservationRoute
+);
+Router.use(
+  "/bill",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  billRoute
+);
+Router.use(
+  "/staff",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  staffRoute
+);
+Router.use(
+  "/shift",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  shiftRoute
+);
+
 // join table
-Router.use("/transaction", transactionRoute);
-Router.use("/orderitem", orderitemRoute);
-Router.use("/reservationtable", reservationtableRoute);
-Router.use("/workingtime", staffshiftRoute);
-Router.use("/productitem", productitemRoute);
+// manager is full action
+//
+Router.use(
+  "/transaction",
+  // authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
+  transactionRoute
+);
+Router.use(
+  "/orderitem",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  orderitemRoute
+);
+Router.use(
+  "/reservationtable",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  reservationtableRoute
+);
+Router.use(
+  "/workingtime",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  staffshiftRoute
+);
+Router.use(
+  "/productitem",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  productitemRoute
+);
 // report
-Router.use("/report", reportRoute);
+Router.use(
+  "/report",
+  // authMiddleware.isAuthorized([
+  //   "Quản Lý",
+  //   "Bồi Bàn",
+  //   "Tiếp Tân",
+  //   "Nhân Viên Bếp",
+  //   "Nhân Viên Kho",
+  // ]),
+  reportRoute
+);
 // auth
 Router.use("/auth", authRoute);
-// test auth
+
+// test auth ********************************
 Router.use(
   "/test_auth_item",
   authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),

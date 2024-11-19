@@ -196,6 +196,53 @@ const deleteProductItem = async (req, res) => {
     res.status(500).json(error);
   }
 };
+const updateQuantityProductItem = async (req, res) => {
+  const { products_id, items_id, quantity } = req.body; // Lấy toàn bộ thông tin từ body
+
+  try {
+    // Kiểm tra nếu thiếu thông tin
+    if (!products_id || !items_id || quantity === undefined) {
+      return res.status(400).json({
+        message: "Missing products_id, items_id, or quantity",
+      });
+    }
+
+    // Kiểm tra nếu quantity bé hơn 0
+    if (quantity <= 0) {
+      return res.status(400).json({
+        message: "Quantity must be greater than 0",
+      });
+    }
+
+    // Kiểm tra xem bản ghi có tồn tại không
+    const checkExist = await pool.query(
+      `SELECT * FROM Products_Items WHERE products_id = $1 AND items_id = $2`,
+      [products_id, items_id]
+    );
+
+    if (checkExist.rowCount === 0) {
+      return res.status(404).json({ message: "Product item not found" });
+    }
+
+    // Cập nhật quantity
+    const result = await pool.query(
+      `UPDATE Products_Items 
+       SET quantity = $1 
+       WHERE products_id = $2 AND items_id = $3 
+       RETURNING *`,
+      [quantity, products_id, items_id]
+    );
+
+    res.status(200).json({
+      ...result.rows[0], // Trả về bản ghi đã cập nhật
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 
 const getall = async (req, res) => {
   try {
@@ -218,4 +265,5 @@ export {
   getProductsByItem,
   deleteProductItem,
   getall,
+  updateQuantityProductItem,
 };
