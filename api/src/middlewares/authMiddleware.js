@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { env } from "../config/environment.js";
 import { JwtProvider } from "../providers/JwtProvider.js";
+import ApiError from "../utils/apiError.js";
 
 // Xác thực và kiểm tra role
 const isAuthorized = (allowedRoles = []) => {
@@ -26,9 +27,8 @@ const isAuthorized = (allowedRoles = []) => {
       // Kiểm tra role
       const userRole = req.jwtDecoded.role;
       if (!allowedRoles.includes(userRole)) {
-        return res
-          .status(StatusCodes.FORBIDDEN)
-          .json({ message: "Forbidden! (Access denied)" });
+        next(new ApiError(StatusCodes.FORBIDDEN, "Forbidden! (Access denied)"));
+        return;
       }
 
       // Cho phép tiếp tục nếu hợp lệ
@@ -36,13 +36,12 @@ const isAuthorized = (allowedRoles = []) => {
     } catch (error) {
       // console.log("Error from authMiddleware: ", error);
       if (error.message?.includes("jwt expired")) {
-        return res
-          .status(StatusCodes.GONE)
-          .json({ message: "Need to refresh token" });
+        next(new ApiError(StatusCodes.GONE, "Need to refresh token"));
+        return;
       }
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: "Unauthorized! (please login)" });
+      next(
+        new ApiError(StatusCodes.UNAUTHORIZED, "Unauthorized! (please login)")
+      );
     }
   };
 };

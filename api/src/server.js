@@ -22,7 +22,12 @@ import { corsOptions } from "./config/cors.js";
 //dotenv
 const START_SERVER = () => {
   const app = express();
-
+  // fix 410 (from disk cache)
+  // https://stackoverflow.com/questions/22632593/how-to-disable-webpage-caching-in-expressjs-nodejs/53240717#53240717
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store')
+    next()
+  })
   app.use(express.json());
   app.use(express.urlencoded({ extended: true })); // parse form data in the req.body
   // app.use(
