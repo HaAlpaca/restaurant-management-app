@@ -49,7 +49,7 @@ const login = async (req, res) => {
       userInfo,
       env.ACCESS_TOKEN_SECRET_SIGNATURE,
       // 20
-      "1h"
+      "22h"
     );
     const refreshToken = await JwtProvider.generateToken(
       userInfo,
@@ -105,7 +105,7 @@ const refreshToken = async (req, res) => {
       userInfo,
       env.ACCESS_TOKEN_SECRET_SIGNATURE,
       // 20
-      "1h"
+      "22h"
     );
     // tra ve access token trong response de dinh vao localstorage
     res.status(StatusCodes.OK).json({ accessToken });

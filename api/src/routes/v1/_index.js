@@ -28,77 +28,77 @@ Router.get("/status", (req, res) => {
 
 Router.use(
   "/provider",
-  // authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
+  authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
   providerRoute
 );
 Router.use(
   "/item",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   itemRoute
 );
 Router.use(
   "/product",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   productRoute
 );
 Router.use(
   "/order",
-  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
   orderRoute
 );
 Router.use(
   "/table",
-  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
   tableRoute
 );
 Router.use(
   "/reservation",
-  // authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
+  authMiddleware.isAuthorized(["Quản Lý", "Bồi Bàn", "Tiếp Tân"]),
   reservationRoute
 );
 Router.use(
   "/bill",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   billRoute
 );
 Router.use(
   "/staff",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   staffRoute
 );
 Router.use(
   "/shift",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   shiftRoute
 );
 
@@ -107,63 +107,63 @@ Router.use(
 //
 Router.use(
   "/transaction",
-  // authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
+  authMiddleware.isAuthorized(["Quản Lý", "Nhân Viên Bếp", "Nhân Viên Kho"]),
   transactionRoute
 );
 Router.use(
   "/orderitem",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   orderitemRoute
 );
 Router.use(
   "/reservationtable",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   reservationtableRoute
 );
 Router.use(
   "/workingtime",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   staffshiftRoute
 );
 Router.use(
   "/productitem",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   productitemRoute
 );
 // report
 Router.use(
   "/report",
-  // authMiddleware.isAuthorized([
-  //   "Quản Lý",
-  //   "Bồi Bàn",
-  //   "Tiếp Tân",
-  //   "Nhân Viên Bếp",
-  //   "Nhân Viên Kho",
-  // ]),
+  authMiddleware.isAuthorized([
+    "Quản Lý",
+    "Bồi Bàn",
+    "Tiếp Tân",
+    "Nhân Viên Bếp",
+    "Nhân Viên Kho",
+  ]),
   reportRoute
 );
 // auth
